@@ -1,0 +1,19 @@
+server:
+  port: 8080
+  mode: debug  # debug, release
+
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: Lycdemima1@
+  dbname: tenant_management
+  sslmode: disable
+
+jwt:
+  secret: your-jwt-secret-key-please-change-in-production
+  expire: 24h
+
+log:
+  level: debug
+  format: json
