@@ -6,8 +6,28 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
+	_ "yuxialuozi_graduation_design_backend/docs"
 	"yuxialuozi_graduation_design_backend/internal/wire"
 )
+
+// @title 租户信息管理系统 API
+// @version 1.0
+// @description 租户信息管理系统后端 API 服务
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.email support@example.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /api
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description 输入 Bearer {token}
 
 func main() {
 	// 初始化日志

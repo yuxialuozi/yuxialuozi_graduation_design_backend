@@ -1,0 +1,1987 @@
+basePath: /api
+definitions:
+  dto.AssignMaintenanceRequest:
+    properties:
+      assignee:
+        type: string
+    required:
+    - assignee
+    type: object
+  dto.AssignTenantRequest:
+    properties:
+      tenantId:
+        type: integer
+    required:
+    - tenantId
+    type: object
+  dto.CompleteMaintenanceRequest:
+    properties:
+      completedAt:
+        type: string
+    type: object
+  dto.CreateContractRequest:
+    properties:
+      amount:
+        type: number
+      contractNo:
+        type: string
+      endDate:
+        type: string
+      startDate:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+    required:
+    - endDate
+    - startDate
+    - tenantId
+    type: object
+  dto.CreateFeeRequest:
+    properties:
+      amount:
+        type: number
+      dueDate:
+        type: string
+      feeType:
+        type: string
+      period:
+        type: string
+      roomNo:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+    required:
+    - amount
+    - dueDate
+    - feeType
+    - tenantId
+    type: object
+  dto.CreateMaintenanceRequest:
+    properties:
+      description:
+        type: string
+      priority:
+        type: string
+      roomNo:
+        type: string
+      tenantId:
+        type: integer
+      type:
+        type: string
+    required:
+    - tenantId
+    type: object
+  dto.CreateRoomRequest:
+    properties:
+      area:
+        type: number
+      building:
+        type: string
+      floor:
+        type: integer
+      monthlyRent:
+        type: number
+      roomNo:
+        type: string
+      status:
+        type: string
+    required:
+    - roomNo
+    type: object
+  dto.CreateTenantRequest:
+    properties:
+      contactPerson:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      status:
+        type: string
+    required:
+    - name
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.PageResult:
+    properties:
+      list: {}
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.PayFeeRequest:
+    properties:
+      paidDate:
+        type: string
+    type: object
+  dto.UpdateContractRequest:
+    properties:
+      amount:
+        type: number
+      contractNo:
+        type: string
+      endDate:
+        type: string
+      startDate:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+    type: object
+  dto.UpdateFeeRequest:
+    properties:
+      amount:
+        type: number
+      dueDate:
+        type: string
+      feeType:
+        type: string
+      period:
+        type: string
+      roomNo:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+    type: object
+  dto.UpdateMaintenanceRequest:
+    properties:
+      assignee:
+        type: string
+      description:
+        type: string
+      priority:
+        type: string
+      roomNo:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+      type:
+        type: string
+    type: object
+  dto.UpdateRoomRequest:
+    properties:
+      area:
+        type: number
+      building:
+        type: string
+      floor:
+        type: integer
+      monthlyRent:
+        type: number
+      roomNo:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.UpdateTenantRequest:
+    properties:
+      contactPerson:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      status:
+        type: string
+    type: object
+  model.Contract:
+    properties:
+      amount:
+        type: number
+      contractNo:
+        type: string
+      createdAt:
+        type: string
+      endDate:
+        type: string
+      id:
+        type: integer
+      startDate:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+      tenantName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.Fee:
+    properties:
+      amount:
+        type: number
+      createdAt:
+        type: string
+      dueDate:
+        type: string
+      feeType:
+        type: string
+      id:
+        type: integer
+      paidDate:
+        type: string
+      period:
+        type: string
+      roomNo:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+      tenantName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.Maintenance:
+    properties:
+      assignee:
+        type: string
+      completedAt:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      priority:
+        type: string
+      roomNo:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+      tenantName:
+        type: string
+      ticketNo:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.Room:
+    properties:
+      area:
+        type: number
+      building:
+        type: string
+      createdAt:
+        type: string
+      floor:
+        type: integer
+      id:
+        type: integer
+      monthlyRent:
+        type: number
+      roomNo:
+        type: string
+      status:
+        type: string
+      tenantId:
+        type: integer
+      tenantName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.Tenant:
+    properties:
+      contactPerson:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      status:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.User:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+      role:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserResponse:
+    description: User represents a user in the system with role-based access control.
+    properties:
+      avatar:
+        example: https://example.com/avatar.jpg
+        type: string
+      createdAt:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      nickname:
+        example: 管理员
+        type: string
+      permissions:
+        example:
+        - '["read"'
+        - ' "write"]'
+        items:
+          type: string
+        type: array
+      role:
+        example: admin
+        type: string
+      updatedAt:
+        example: "2024-01-01T00:00:00Z"
+        type: string
+      username:
+        example: admin
+        type: string
+    type: object
+  repository.FeeComposition:
+    properties:
+      amount:
+        type: number
+      feeType:
+        type: string
+    type: object
+  repository.IncomeByMonth:
+    properties:
+      amount:
+        type: number
+      month:
+        type: string
+    type: object
+  repository.MaintenanceStats:
+    properties:
+      count:
+        type: integer
+      type:
+        type: string
+    type: object
+  repository.MaintenanceStatusStats:
+    properties:
+      count:
+        type: integer
+      status:
+        type: string
+    type: object
+  repository.TenantFeeRanking:
+    properties:
+      amount:
+        type: number
+      tenantId:
+        type: integer
+      tenantName:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  service.DashboardData:
+    properties:
+      activeContracts:
+        type: integer
+      occupancyRate:
+        type: number
+      occupiedRooms:
+        type: integer
+      pendingFees:
+        type: integer
+      pendingMaintenance:
+        type: integer
+      totalRooms:
+        type: integer
+      totalTenants:
+        type: integer
+      unpaidAmount:
+        type: number
+    type: object
+  service.IncomeReport:
+    properties:
+      byMonth:
+        items:
+          $ref: '#/definitions/repository.IncomeByMonth'
+        type: array
+      byType:
+        items:
+          $ref: '#/definitions/repository.FeeComposition'
+        type: array
+      total:
+        type: number
+    type: object
+  service.LoginResponse:
+    description: LoginResponse represents the response for login API with JWT token
+      and user info.
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        $ref: '#/definitions/model.UserResponse'
+    type: object
+  service.MaintenanceReport:
+    properties:
+      byStatus:
+        items:
+          $ref: '#/definitions/repository.MaintenanceStatusStats'
+        type: array
+      byType:
+        items:
+          $ref: '#/definitions/repository.MaintenanceStats'
+        type: array
+    type: object
+  service.OccupancyReport:
+    properties:
+      occupancyRate:
+        type: number
+      occupiedRooms:
+        type: integer
+      totalRooms:
+        type: integer
+      vacantRooms:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+  description: 租户信息管理系统后端 API 服务
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: 租户信息管理系统 API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 使用用户名和密码登录系统
+      parameters:
+      - description: 登录请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.LoginResponse'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 用户名或密码错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户登录
+      tags:
+      - 认证
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: 退出当前用户登录状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 退出成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 退出登录
+      tags:
+      - 认证
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的详细信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+        "401":
+          description: 未登录
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取当前用户信息
+      tags:
+      - 认证
+  /contracts:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取合同列表，支持关键字搜索、状态筛选和日期范围
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 搜索关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 状态筛选
+        enum:
+        - draft
+        - active
+        - expired
+        - terminated
+        in: query
+        name: status
+        type: string
+      - description: 开始日期起始 (YYYY-MM-DD)
+        in: query
+        name: startDateFrom
+        type: string
+      - description: 开始日期结束 (YYYY-MM-DD)
+        in: query
+        name: startDateTo
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PageResult'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取合同列表
+      tags:
+      - 合同管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的合同
+      parameters:
+      - description: 创建合同请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateContractRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Contract'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建合同
+      tags:
+      - 合同管理
+  /contracts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定合同
+      parameters:
+      - description: 合同 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除合同
+      tags:
+      - 合同管理
+    get:
+      consumes:
+      - application/json
+      description: 根据 ID 获取合同详细信息
+      parameters:
+      - description: 合同 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Contract'
+              type: object
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 合同不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取合同详情
+      tags:
+      - 合同管理
+    put:
+      consumes:
+      - application/json
+      description: 更新合同信息
+      parameters:
+      - description: 合同 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新合同请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateContractRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Contract'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 合同不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新合同
+      tags:
+      - 合同管理
+  /fees:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取费用列表，支持多条件筛选
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 租户 ID
+        in: query
+        name: tenantId
+        type: integer
+      - description: 房间号
+        in: query
+        name: roomNo
+        type: string
+      - description: 费用类型
+        enum:
+        - rent
+        - water
+        - electricity
+        - property
+        - other
+        in: query
+        name: feeType
+        type: string
+      - description: 状态
+        enum:
+        - unpaid
+        - paid
+        - overdue
+        in: query
+        name: status
+        type: string
+      - description: '账期 (如: 2024-03)'
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PageResult'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取费用列表
+      tags:
+      - 费用管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的费用记录
+      parameters:
+      - description: 创建费用请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateFeeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Fee'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建费用
+      tags:
+      - 费用管理
+  /fees/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定费用记录
+      parameters:
+      - description: 费用 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除费用
+      tags:
+      - 费用管理
+    get:
+      consumes:
+      - application/json
+      description: 根据 ID 获取费用详细信息
+      parameters:
+      - description: 费用 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Fee'
+              type: object
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 费用记录不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取费用详情
+      tags:
+      - 费用管理
+    put:
+      consumes:
+      - application/json
+      description: 更新费用记录
+      parameters:
+      - description: 费用 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新费用请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateFeeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Fee'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 费用记录不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新费用
+      tags:
+      - 费用管理
+  /fees/{id}/pay:
+    post:
+      consumes:
+      - application/json
+      description: 确认费用已缴纳
+      parameters:
+      - description: 费用 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 缴费请求
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/dto.PayFeeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 缴费成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 确认缴费失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 确认缴费
+      tags:
+      - 费用管理
+  /maintenance:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取维修工单列表，支持多条件筛选
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 搜索关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 维修类型
+        enum:
+        - electrical
+        - plumbing
+        - appliance
+        - furniture
+        - other
+        in: query
+        name: type
+        type: string
+      - description: 状态
+        enum:
+        - pending
+        - processing
+        - completed
+        - cancelled
+        in: query
+        name: status
+        type: string
+      - description: 优先级
+        enum:
+        - low
+        - medium
+        - high
+        - urgent
+        in: query
+        name: priority
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PageResult'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取维修工单列表
+      tags:
+      - 维修管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的维修工单
+      parameters:
+      - description: 创建工单请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMaintenanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Maintenance'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建维修工单
+      tags:
+      - 维修管理
+  /maintenance/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定维修工单
+      parameters:
+      - description: 工单 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除维修工单
+      tags:
+      - 维修管理
+    get:
+      consumes:
+      - application/json
+      description: 根据 ID 获取维修工单详细信息
+      parameters:
+      - description: 工单 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Maintenance'
+              type: object
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 维修工单不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取维修工单详情
+      tags:
+      - 维修管理
+    put:
+      consumes:
+      - application/json
+      description: 更新维修工单信息
+      parameters:
+      - description: 工单 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新工单请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMaintenanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Maintenance'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 维修工单不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新维修工单
+      tags:
+      - 维修管理
+  /maintenance/{id}/assign:
+    post:
+      consumes:
+      - application/json
+      description: 为维修工单指派维修人员
+      parameters:
+      - description: 工单 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 指派请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssignMaintenanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 指派成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 指派失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 指派维修人员
+      tags:
+      - 维修管理
+  /maintenance/{id}/complete:
+    post:
+      consumes:
+      - application/json
+      description: 标记维修工单为已完成
+      parameters:
+      - description: 工单 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 完成请求
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/dto.CompleteMaintenanceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 完成成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 完成失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 完成工单
+      tags:
+      - 维修管理
+  /reports/dashboard:
+    get:
+      consumes:
+      - application/json
+      description: 获取仪表盘汇总数据
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.DashboardData'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 仪表盘数据
+      tags:
+      - 报表统计
+  /reports/fees/composition:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定时间范围内的费用构成数据
+      parameters:
+      - description: 开始日期 (YYYY-MM-DD)
+        in: query
+        name: start
+        type: string
+      - description: 结束日期 (YYYY-MM-DD)
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/repository.FeeComposition'
+                  type: array
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 费用构成
+      tags:
+      - 报表统计
+  /reports/income:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定时间范围内的收入统计数据
+      parameters:
+      - description: 开始日期 (YYYY-MM-DD)
+        in: query
+        name: start
+        type: string
+      - description: 结束日期 (YYYY-MM-DD)
+        in: query
+        name: end
+        type: string
+      - description: 分组方式
+        enum:
+        - month
+        - type
+        in: query
+        name: groupBy
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.IncomeReport'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 收入统计
+      tags:
+      - 报表统计
+  /reports/maintenance/stats:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定时间范围内的维修统计数据
+      parameters:
+      - description: 开始日期 (YYYY-MM-DD)
+        in: query
+        name: start
+        type: string
+      - description: 结束日期 (YYYY-MM-DD)
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.MaintenanceReport'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 维修统计
+      tags:
+      - 报表统计
+  /reports/occupancy:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前出租率统计数据
+      parameters:
+      - description: 开始日期 (YYYY-MM-DD)
+        in: query
+        name: start
+        type: string
+      - description: 结束日期 (YYYY-MM-DD)
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.OccupancyReport'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 出租率统计
+      tags:
+      - 报表统计
+  /reports/tenants/ranking:
+    get:
+      consumes:
+      - application/json
+      description: 获取缴费金额租户排行榜
+      parameters:
+      - default: 10
+        description: 返回数量
+        in: query
+        name: limit
+        type: integer
+      - description: 开始日期 (YYYY-MM-DD)
+        in: query
+        name: start
+        type: string
+      - description: 结束日期 (YYYY-MM-DD)
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/repository.TenantFeeRanking'
+                  type: array
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 租户排行
+      tags:
+      - 报表统计
+  /rooms:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取房间列表，支持关键字搜索、楼栋筛选和状态筛选
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 搜索关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 楼栋筛选
+        in: query
+        name: building
+        type: string
+      - description: 状态筛选
+        enum:
+        - vacant
+        - occupied
+        - maintenance
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PageResult'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取房间列表
+      tags:
+      - 房间管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的房间
+      parameters:
+      - description: 创建房间请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRoomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Room'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建房间
+      tags:
+      - 房间管理
+  /rooms/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定房间
+      parameters:
+      - description: 房间 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除房间
+      tags:
+      - 房间管理
+    get:
+      consumes:
+      - application/json
+      description: 根据 ID 获取房间详细信息
+      parameters:
+      - description: 房间 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Room'
+              type: object
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 房间不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取房间详情
+      tags:
+      - 房间管理
+    put:
+      consumes:
+      - application/json
+      description: 更新房间信息
+      parameters:
+      - description: 房间 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新房间请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Room'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 房间不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新房间
+      tags:
+      - 房间管理
+  /rooms/{id}/assign:
+    post:
+      consumes:
+      - application/json
+      description: 将租户分配到指定房间
+      parameters:
+      - description: 房间 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 分配租户请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssignTenantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分配成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 请求参数错误或房间已被占用
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 分配租户
+      tags:
+      - 房间管理
+  /tenants:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取租户列表，支持关键字搜索和状态筛选
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 搜索关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 状态筛选
+        enum:
+        - active
+        - inactive
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.PageResult'
+              type: object
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取租户列表
+      tags:
+      - 租户管理
+    post:
+      consumes:
+      - application/json
+      description: 创建新的租户
+      parameters:
+      - description: 创建租户请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTenantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Tenant'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 创建失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 创建租户
+      tags:
+      - 租户管理
+  /tenants/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定租户
+      parameters:
+      - description: 租户 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 删除失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 删除租户
+      tags:
+      - 租户管理
+    get:
+      consumes:
+      - application/json
+      description: 根据 ID 获取租户详细信息
+      parameters:
+      - description: 租户 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Tenant'
+              type: object
+        "400":
+          description: 无效的 ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 租户不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 获取租户详情
+      tags:
+      - 租户管理
+    put:
+      consumes:
+      - application/json
+      description: 更新租户信息
+      parameters:
+      - description: 租户 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新租户请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTenantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Tenant'
+              type: object
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: 租户不存在
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 更新失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: 更新租户
+      tags:
+      - 租户管理
+securityDefinitions:
+  BearerAuth:
+    description: 输入 Bearer {token}
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

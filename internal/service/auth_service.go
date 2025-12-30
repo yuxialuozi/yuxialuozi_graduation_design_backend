@@ -29,9 +29,11 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// LoginResponse represents the response for login API.
+// @Description LoginResponse represents the response for login API with JWT token and user info.
 type LoginResponse struct {
-	Token string      `json:"token"`
-	User  *model.User `json:"user"`
+	Token string           `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+	User  *model.UserResponse `json:"user"`
 }
 
 func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
@@ -50,9 +52,21 @@ func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
 		return nil, errors.New("生成 token 失败")
 	}
 
+	// Convert model.User to model.UserResponse for Swagger
+	userResponse := &model.UserResponse{
+		ID:          user.ID,
+		Username:    user.Username,
+		Nickname:    user.Nickname,
+		Avatar:      user.Avatar,
+		Role:        user.Role,
+		Permissions: []string(user.Permissions),
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+	}
+
 	return &LoginResponse{
 		Token: token,
-		User:  user,
+		User:  userResponse,
 	}, nil
 }
 

@@ -19,6 +19,23 @@ func NewFeeHandler(feeService *service.FeeService) *FeeHandler {
 	return &FeeHandler{feeService: feeService}
 }
 
+// List godoc
+// @Summary 获取费用列表
+// @Description 分页获取费用列表，支持多条件筛选
+// @Tags 费用管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param page query int false "页码" default(1)
+// @Param pageSize query int false "每页数量" default(10)
+// @Param tenantId query int false "租户 ID"
+// @Param roomNo query string false "房间号"
+// @Param feeType query string false "费用类型" Enums(rent, water, electricity, property, other)
+// @Param status query string false "状态" Enums(unpaid, paid, overdue)
+// @Param period query string false "账期 (如: 2024-03)"
+// @Success 200 {object} response.Response{data=dto.PageResult} "获取成功"
+// @Failure 500 {object} response.Response "服务器错误"
+// @Router /fees [get]
 func (h *FeeHandler) List(c *gin.Context) {
 	var req dto.FeeListRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -42,6 +59,18 @@ func (h *FeeHandler) List(c *gin.Context) {
 	response.Success(c, dto.NewPageResult(fees, total, req.Page, req.PageSize))
 }
 
+// GetByID godoc
+// @Summary 获取费用详情
+// @Description 根据 ID 获取费用详细信息
+// @Tags 费用管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "费用 ID"
+// @Success 200 {object} response.Response{data=model.Fee} "获取成功"
+// @Failure 400 {object} response.Response "无效的 ID"
+// @Failure 404 {object} response.Response "费用记录不存在"
+// @Router /fees/{id} [get]
 func (h *FeeHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -58,6 +87,18 @@ func (h *FeeHandler) GetByID(c *gin.Context) {
 	response.Success(c, fee)
 }
 
+// Create godoc
+// @Summary 创建费用
+// @Description 创建新的费用记录
+// @Tags 费用管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dto.CreateFeeRequest true "创建费用请求"
+// @Success 200 {object} response.Response{data=model.Fee} "创建成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 500 {object} response.Response "创建失败"
+// @Router /fees [post]
 func (h *FeeHandler) Create(c *gin.Context) {
 	var req dto.CreateFeeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -87,6 +128,20 @@ func (h *FeeHandler) Create(c *gin.Context) {
 	response.Success(c, fee)
 }
 
+// Update godoc
+// @Summary 更新费用
+// @Description 更新费用记录
+// @Tags 费用管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "费用 ID"
+// @Param request body dto.UpdateFeeRequest true "更新费用请求"
+// @Success 200 {object} response.Response{data=model.Fee} "更新成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 404 {object} response.Response "费用记录不存在"
+// @Failure 500 {object} response.Response "更新失败"
+// @Router /fees/{id} [put]
 func (h *FeeHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -136,6 +191,18 @@ func (h *FeeHandler) Update(c *gin.Context) {
 	response.Success(c, fee)
 }
 
+// Delete godoc
+// @Summary 删除费用
+// @Description 删除指定费用记录
+// @Tags 费用管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "费用 ID"
+// @Success 200 {object} response.Response "删除成功"
+// @Failure 400 {object} response.Response "无效的 ID"
+// @Failure 500 {object} response.Response "删除失败"
+// @Router /fees/{id} [delete]
 func (h *FeeHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -151,6 +218,19 @@ func (h *FeeHandler) Delete(c *gin.Context) {
 	response.Success(c, nil)
 }
 
+// Pay godoc
+// @Summary 确认缴费
+// @Description 确认费用已缴纳
+// @Tags 费用管理
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "费用 ID"
+// @Param request body dto.PayFeeRequest false "缴费请求"
+// @Success 200 {object} response.Response "缴费成功"
+// @Failure 400 {object} response.Response "无效的 ID"
+// @Failure 500 {object} response.Response "确认缴费失败"
+// @Router /fees/{id}/pay [post]
 func (h *FeeHandler) Pay(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {

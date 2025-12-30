@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"yuxialuozi_graduation_design_backend/internal/config"
 	"yuxialuozi_graduation_design_backend/internal/handler"
@@ -64,6 +66,9 @@ func (r *Router) setupMiddlewares() {
 }
 
 func (r *Router) setupRoutes() {
+	// Swagger 文档路由
+	r.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	api := r.engine.Group("/api")
 	{
 		// Auth routes (public)
