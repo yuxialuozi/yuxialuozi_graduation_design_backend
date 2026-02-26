@@ -9,6 +9,7 @@ import (
 	"yuxialuozi_graduation_design_backend/internal/config"
 	"yuxialuozi_graduation_design_backend/internal/handler"
 	"yuxialuozi_graduation_design_backend/internal/middleware"
+	"yuxialuozi_graduation_design_backend/internal/service"
 )
 
 var ProviderSet = wire.NewSet(NewRouter)
@@ -23,11 +24,13 @@ type Router struct {
 	feeHandler         *handler.FeeHandler
 	maintenanceHandler *handler.MaintenanceHandler
 	reportHandler      *handler.ReportHandler
+	authService        *service.AuthService
 }
 
 func NewRouter(
 	config *config.Config,
 	authHandler *handler.AuthHandler,
+	authService *service.AuthService,
 	tenantHandler *handler.TenantHandler,
 	contractHandler *handler.ContractHandler,
 	roomHandler *handler.RoomHandler,
@@ -45,6 +48,7 @@ func NewRouter(
 		engine:             engine,
 		config:             config,
 		authHandler:        authHandler,
+		authService:        authService,
 		tenantHandler:      tenantHandler,
 		contractHandler:    contractHandler,
 		roomHandler:        roomHandler,
@@ -159,4 +163,8 @@ func (r *Router) Run() error {
 
 func (r *Router) Engine() *gin.Engine {
 	return r.engine
+}
+
+func (r *Router) CreateDefaultAdmin() error {
+	return r.authService.CreateDefaultAdmin()
 }

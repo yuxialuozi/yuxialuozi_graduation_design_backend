@@ -157,3 +157,13 @@ func (r *FeeRepository) GetTenantRanking(limit int, start, end time.Time) ([]Ten
 		Scan(&rankings).Error
 	return rankings, err
 }
+
+// SumByType 按费用类型求和
+func (r *FeeRepository) SumByType(feeType string) (float64, error) {
+	var sum float64
+	err := r.db.Model(&model.Fee{}).
+		Where("fee_type = ? AND status = 'paid'", feeType).
+		Select("COALESCE(SUM(amount), 0)").
+		Scan(&sum).Error
+	return sum, err
+}

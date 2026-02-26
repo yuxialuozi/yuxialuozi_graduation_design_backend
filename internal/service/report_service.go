@@ -31,9 +31,9 @@ func NewReportService(
 }
 
 type IncomeReport struct {
-	Total     float64                       `json:"total"`
-	ByMonth   []repository.IncomeByMonth    `json:"byMonth"`
-	ByType    []repository.FeeComposition   `json:"byType"`
+	Total   float64                     `json:"total"`
+	ByMonth []repository.IncomeByMonth  `json:"byMonth"`
+	ByType  []repository.FeeComposition `json:"byType"`
 }
 
 func (s *ReportService) GetIncomeReport(start, end time.Time, groupBy string) (*IncomeReport, error) {
@@ -126,14 +126,34 @@ func (s *ReportService) GetTenantRanking(limit int, start, end time.Time) ([]rep
 }
 
 type DashboardData struct {
-	TotalTenants      int64   `json:"totalTenants"`
-	TotalRooms        int64   `json:"totalRooms"`
-	OccupiedRooms     int64   `json:"occupiedRooms"`
-	OccupancyRate     float64 `json:"occupancyRate"`
-	ActiveContracts   int64   `json:"activeContracts"`
-	PendingFees       int64   `json:"pendingFees"`
-	UnpaidAmount      float64 `json:"unpaidAmount"`
-	PendingMaintenance int64  `json:"pendingMaintenance"`
+	TotalTenants       int64   `json:"totalTenants"`
+	TotalRooms         int64   `json:"totalRooms"`
+	OccupiedRooms      int64   `json:"occupiedRooms"`
+	OccupancyRate      float64 `json:"occupancyRate"`
+	ActiveContracts    int64   `json:"activeContracts"`
+	PendingFees        int64   `json:"pendingFees"`
+	UnpaidAmount       float64 `json:"unpaidAmount"`
+	PendingMaintenance int64   `json:"pendingMaintenance"`
+	// 图表数据，匹配前端期望
+	IncomeChart            []IncomeChartData            `json:"incomeChart"`
+	MaintenanceStatusChart []MaintenanceStatusChartData `json:"maintenanceStatusChart"`
+	FeeTypeChart           []FeeTypeChartData           `json:"feeTypeChart"`
+}
+
+// 添加图表数据结构类型
+type IncomeChartData struct {
+	Date   string  `json:"date"`
+	Amount float64 `json:"amount"`
+}
+
+type MaintenanceStatusChartData struct {
+	Status string `json:"status"`
+	Count  int64  `json:"count"`
+}
+
+type FeeTypeChartData struct {
+	FeeType string  `json:"feeType"`
+	Amount  float64 `json:"amount"`
 }
 
 func (s *ReportService) GetDashboardData() (*DashboardData, error) {
@@ -177,14 +197,64 @@ func (s *ReportService) GetDashboardData() (*DashboardData, error) {
 		occupancyRate = float64(occupiedRooms) / float64(totalRooms) * 100
 	}
 
+	// 生成收入图表数据（最近6个月）
+	incomeChart := make([]IncomeChartData, 0)
+	now := time.Now()
+	for i := 5; i >= 0; i-- {
+		// 使用 AddDate 方法减去月份
+		startDate := now.AddDate(0, -i, 0)
+		// 将日期设置为当月第一天
+		startDate = time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, startDate.Location())
+
+		startOfMonth := time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, startDate.Location())
+		endOfMonth := startOfMonth.AddDate(0, 1, -1)
+
+		monthlyIncome, _ := s.feeRepo.SumByPeriod(startOfMonth, endOfMonth)
+		incomeChart = append(incomeChart, IncomeChartData{
+			Date:   startOfMonth.Format("2006-01"),
+			Amount: monthlyIncome,
+		})
+	}
+
+	// 生成维修状态图表数据
+	maintenanceStatusChart := make([]MaintenanceStatusChartData, 0)
+	statuses := []string{"pending", "processing", "completed", "cancelled"}
+	for _, status := range statuses {
+		count, err := s.maintenanceRepo.CountByStatus(status)
+		if err != nil {
+			count = 0
+		}
+		maintenanceStatusChart = append(maintenanceStatusChart, MaintenanceStatusChartData{
+			Status: status,
+			Count:  count,
+		})
+	}
+
+	// 生成费用类型图表数据
+	feeTypeChart := make([]FeeTypeChartData, 0)
+	feeTypes := []string{"rent", "water", "electricity", "property", "other"}
+	for _, feeType := range feeTypes {
+		amount, err := s.feeRepo.SumByType(feeType)
+		if err != nil {
+			amount = 0
+		}
+		feeTypeChart = append(feeTypeChart, FeeTypeChartData{
+			FeeType: feeType,
+			Amount:  amount,
+		})
+	}
+
 	return &DashboardData{
-		TotalTenants:       int64(len(tenants)),
-		TotalRooms:         totalRooms,
-		OccupiedRooms:      occupiedRooms,
-		OccupancyRate:      occupancyRate,
-		ActiveContracts:    activeContracts,
-		PendingFees:        pendingFees,
-		UnpaidAmount:       unpaidAmount,
-		PendingMaintenance: pendingMaintenance,
+		TotalTenants:           int64(len(tenants)),
+		TotalRooms:             totalRooms,
+		OccupiedRooms:          occupiedRooms,
+		OccupancyRate:          occupancyRate,
+		ActiveContracts:        activeContracts,
+		PendingFees:            pendingFees,
+		UnpaidAmount:           unpaidAmount,
+		PendingMaintenance:     pendingMaintenance,
+		IncomeChart:            incomeChart,
+		MaintenanceStatusChart: maintenanceStatusChart,
+		FeeTypeChart:           feeTypeChart,
 	}, nil
 }

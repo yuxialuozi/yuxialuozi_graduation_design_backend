@@ -40,6 +40,13 @@ func main() {
 	}
 	defer cleanup()
 
+	// 创建默认管理员用户
+	if err := router.CreateDefaultAdmin(); err != nil {
+		zap.L().Error("Failed to create default admin", zap.Error(err))
+	} else {
+		zap.L().Info("Default admin user created/checked: admin/123456")
+	}
+
 	zap.L().Info("Server starting on :8080")
 
 	if err := router.Run(); err != nil {

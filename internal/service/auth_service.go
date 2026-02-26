@@ -32,8 +32,10 @@ type LoginRequest struct {
 // LoginResponse represents the response for login API.
 // @Description LoginResponse represents the response for login API with JWT token and user info.
 type LoginResponse struct {
-	Token string           `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
-	User  *model.UserResponse `json:"user"`
+	Token    string              `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+	UserInfo *model.UserResponse `json:"userInfo"` // 改为 userInfo 字段，匹配前端期望
+	// 保留 user 字段做兼容
+	User *model.UserResponse `json:"-"` // 不在JSON中输出，但保留用于内部使用
 }
 
 func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
@@ -65,8 +67,9 @@ func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
 	}
 
 	return &LoginResponse{
-		Token: token,
-		User:  userResponse,
+		Token:    token,
+		UserInfo: userResponse,
+		User:     userResponse,
 	}, nil
 }
 
@@ -80,7 +83,7 @@ func (s *AuthService) CreateDefaultAdmin() error {
 		return nil
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("admin123"), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
