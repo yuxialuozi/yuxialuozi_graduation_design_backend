@@ -65,7 +65,8 @@ func (s *MaintenanceService) Complete(id uint, completedAt *time.Time) error {
 		completedAt = &now
 	}
 
-	maintenance.CompletedAt = completedAt
+	customTime := model.NewCustomTime(*completedAt)
+	maintenance.CompletedAt = &customTime
 	maintenance.Status = "completed"
 	return s.maintenanceRepo.Update(maintenance)
 }

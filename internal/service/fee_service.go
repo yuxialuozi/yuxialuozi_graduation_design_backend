@@ -50,7 +50,8 @@ func (s *FeeService) Pay(id uint, paidDate *time.Time) error {
 		paidDate = &now
 	}
 
-	fee.PaidDate = paidDate
+	customTime := model.NewCustomTime(*paidDate)
+	fee.PaidDate = &customTime
 	fee.Status = "paid"
 	return s.feeRepo.Update(fee)
 }

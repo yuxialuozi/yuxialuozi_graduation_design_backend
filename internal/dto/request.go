@@ -1,6 +1,10 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"yuxialuozi_graduation_design_backend/internal/model"
+)
 
 // Auth
 type LoginRequest struct {
@@ -34,21 +38,21 @@ type TenantListRequest struct {
 
 // Contract
 type CreateContractRequest struct {
-	TenantID   uint      `json:"tenantId" binding:"required"`
-	ContractNo string    `json:"contractNo"`
-	StartDate  time.Time `json:"startDate" binding:"required"`
-	EndDate    time.Time `json:"endDate" binding:"required"`
-	Amount     float64   `json:"amount"`
-	Status     string    `json:"status"`
+	TenantID   uint             `json:"tenantId" binding:"required"`
+	ContractNo string           `json:"contractNo"`
+	StartDate  model.CustomTime `json:"startDate" binding:"required"`
+	EndDate    model.CustomTime `json:"endDate" binding:"required"`
+	Amount     float64          `json:"amount"`
+	Status     string           `json:"status"`
 }
 
 type UpdateContractRequest struct {
-	TenantID   uint      `json:"tenantId"`
-	ContractNo string    `json:"contractNo"`
-	StartDate  time.Time `json:"startDate"`
-	EndDate    time.Time `json:"endDate"`
-	Amount     float64   `json:"amount"`
-	Status     string    `json:"status"`
+	TenantID   uint              `json:"tenantId"`
+	ContractNo string            `json:"contractNo"`
+	StartDate  *model.CustomTime `json:"startDate"`
+	EndDate    *model.CustomTime `json:"endDate"`
+	Amount     float64           `json:"amount"`
+	Status     string            `json:"status"`
 }
 
 type ContractListRequest struct {
@@ -93,23 +97,23 @@ type AssignTenantRequest struct {
 
 // Fee
 type CreateFeeRequest struct {
-	TenantID uint      `json:"tenantId" binding:"required"`
-	RoomNo   string    `json:"roomNo"`
-	FeeType  string    `json:"feeType" binding:"required"`
-	Amount   float64   `json:"amount" binding:"required"`
-	Period   string    `json:"period"`
-	DueDate  time.Time `json:"dueDate" binding:"required"`
-	Status   string    `json:"status"`
+	TenantID uint             `json:"tenantId" binding:"required"`
+	RoomNo   string           `json:"roomNo"`
+	FeeType  string           `json:"feeType" binding:"required"`
+	Amount   float64          `json:"amount" binding:"required"`
+	Period   string           `json:"period"`
+	DueDate  model.CustomTime `json:"dueDate" binding:"required"`
+	Status   string           `json:"status"`
 }
 
 type UpdateFeeRequest struct {
-	TenantID uint      `json:"tenantId"`
-	RoomNo   string    `json:"roomNo"`
-	FeeType  string    `json:"feeType"`
-	Amount   float64   `json:"amount"`
-	Period   string    `json:"period"`
-	DueDate  time.Time `json:"dueDate"`
-	Status   string    `json:"status"`
+	TenantID uint              `json:"tenantId"`
+	RoomNo   string            `json:"roomNo"`
+	FeeType  string            `json:"feeType"`
+	Amount   float64           `json:"amount"`
+	Period   string            `json:"period"`
+	DueDate  *model.CustomTime `json:"dueDate"`
+	Status   string            `json:"status"`
 }
 
 type FeeListRequest struct {

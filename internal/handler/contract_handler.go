@@ -123,8 +123,8 @@ func (h *ContractHandler) Create(c *gin.Context) {
 	contract := &model.Contract{
 		TenantID:   req.TenantID,
 		ContractNo: req.ContractNo,
-		StartDate:  req.StartDate,
-		EndDate:    req.EndDate,
+		StartDate:  model.NewCustomTime(req.StartDate.Time),
+		EndDate:    model.NewCustomTime(req.EndDate.Time),
 		Amount:     req.Amount,
 		Status:     req.Status,
 	}
@@ -180,11 +180,11 @@ func (h *ContractHandler) Update(c *gin.Context) {
 	if req.ContractNo != "" {
 		contract.ContractNo = req.ContractNo
 	}
-	if !req.StartDate.IsZero() {
-		contract.StartDate = req.StartDate
+	if req.StartDate != nil {
+		contract.StartDate = *req.StartDate
 	}
-	if !req.EndDate.IsZero() {
-		contract.EndDate = req.EndDate
+	if req.EndDate != nil {
+		contract.EndDate = *req.EndDate
 	}
 	if req.Amount > 0 {
 		contract.Amount = req.Amount

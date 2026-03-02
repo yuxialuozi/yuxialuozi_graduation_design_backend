@@ -112,7 +112,7 @@ func (h *FeeHandler) Create(c *gin.Context) {
 		FeeType:  req.FeeType,
 		Amount:   req.Amount,
 		Period:   req.Period,
-		DueDate:  req.DueDate,
+		DueDate:  model.NewCustomTime(req.DueDate.Time),
 		Status:   req.Status,
 	}
 
@@ -176,8 +176,8 @@ func (h *FeeHandler) Update(c *gin.Context) {
 	if req.Period != "" {
 		fee.Period = req.Period
 	}
-	if !req.DueDate.IsZero() {
-		fee.DueDate = req.DueDate
+	if req.DueDate != nil {
+		fee.DueDate = *req.DueDate
 	}
 	if req.Status != "" {
 		fee.Status = req.Status

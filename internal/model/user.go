@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"github.com/lib/pq"
 )
 
@@ -14,8 +12,8 @@ type User struct {
 	Avatar      string         `gorm:"size:255" json:"avatar"`
 	Role        string         `gorm:"size:20;default:'user'" json:"role"`
 	Permissions pq.StringArray `gorm:"type:text[]" json:"permissions" swaggertype:"array,string"`
-	CreatedAt   time.Time      `json:"createdAt"`
-	UpdatedAt   time.Time      `json:"updatedAt"`
+	CreatedAt   CustomTime     `json:"createdAt"`
+	UpdatedAt   CustomTime     `json:"updatedAt"`
 }
 
 // User represents a user in the system.
@@ -27,8 +25,8 @@ type UserResponse struct {
 	Avatar      string   `json:"avatar" example:"https://example.com/avatar.jpg"`
 	Role        string   `json:"role" example:"admin"`
 	Permissions []string `json:"permissions" swaggertype:"array,string" example:"[\"read\", \"write\"]"`
-	CreatedAt   string   `json:"createdAt" example:"2024-01-01T00:00:00Z"`
-	UpdatedAt   string   `json:"updatedAt" example:"2024-01-01T00:00:00Z"`
+	CreatedAt   string   `json:"createdAt" example:"2024-01-01 00:00:00"`
+	UpdatedAt   string   `json:"updatedAt" example:"2024-01-01 00:00:00"`
 }
 
 func (User) TableName() string {
