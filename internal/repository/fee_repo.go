@@ -76,7 +76,7 @@ func (r *FeeRepository) List(page, pageSize int, tenantID uint, roomNo, feeType,
 func (r *FeeRepository) SumByTypeAndPeriod(feeType string, start, end time.Time) (float64, error) {
 	var sum float64
 	err := r.db.Model(&model.Fee{}).
-		Where("fee_type = ? AND status = 'paid' AND paid_date >= ? AND paid_date <= ?", feeType, start, end).
+		Where("fee_type = ? AND status = 'paid' AND COALESCE(paid_date, due_date, created_at) >= ? AND COALESCE(paid_date, due_date, created_at) <= ?", feeType, start, end).
 		Select("COALESCE(SUM(amount), 0)").
 		Scan(&sum).Error
 	return sum, err
@@ -85,7 +85,7 @@ func (r *FeeRepository) SumByTypeAndPeriod(feeType string, start, end time.Time)
 func (r *FeeRepository) SumByPeriod(start, end time.Time) (float64, error) {
 	var sum float64
 	err := r.db.Model(&model.Fee{}).
-		Where("status = 'paid' AND paid_date >= ? AND paid_date <= ?", start, end).
+		Where("status = 'paid' AND COALESCE(paid_date, due_date, created_at) >= ? AND COALESCE(paid_date, due_date, created_at) <= ?", start, end).
 		Select("COALESCE(SUM(amount), 0)").
 		Scan(&sum).Error
 	return sum, err
@@ -117,7 +117,7 @@ func (r *FeeRepository) GetComposition(start, end time.Time) ([]FeeComposition, 
 	var compositions []FeeComposition
 	err := r.db.Model(&model.Fee{}).
 		Select("fee_type, COALESCE(SUM(amount), 0) as amount").
-		Where("status = 'paid' AND paid_date >= ? AND paid_date <= ?", start, end).
+		Where("status = 'paid' AND COALESCE(paid_date, due_date, created_at) >= ? AND COALESCE(paid_date, due_date, created_at) <= ?", start, end).
 		Group("fee_type").
 		Scan(&compositions).Error
 	return compositions, err
@@ -131,10 +131,26 @@ type IncomeByMonth struct {
 func (r *FeeRepository) GetIncomeByMonth(start, end time.Time) ([]IncomeByMonth, error) {
 	var incomes []IncomeByMonth
 	err := r.db.Model(&model.Fee{}).
-		Select("TO_CHAR(paid_date, 'YYYY-MM') as month, COALESCE(SUM(amount), 0) as amount").
-		Where("status = 'paid' AND paid_date >= ? AND paid_date <= ?", start, end).
-		Group("TO_CHAR(paid_date, 'YYYY-MM')").
+		Select("TO_CHAR(COALESCE(paid_date, due_date, created_at), 'YYYY-MM') as month, COALESCE(SUM(amount), 0) as amount").
+		Where("status = 'paid' AND COALESCE(paid_date, due_date, created_at) >= ? AND COALESCE(paid_date, due_date, created_at) <= ?", start, end).
+		Group("TO_CHAR(COALESCE(paid_date, due_date, created_at), 'YYYY-MM')").
 		Order("month ASC").
+		Scan(&incomes).Error
+	return incomes, err
+}
+
+type IncomeByDay struct {
+	Day    string  `json:"day"`
+	Amount float64 `json:"amount"`
+}
+
+func (r *FeeRepository) GetIncomeByDay(start, end time.Time) ([]IncomeByDay, error) {
+	var incomes []IncomeByDay
+	err := r.db.Model(&model.Fee{}).
+		Select("DATE(COALESCE(paid_date, due_date, created_at)) as day, COALESCE(SUM(amount), 0) as amount").
+		Where("status = 'paid' AND COALESCE(paid_date, due_date, created_at) >= ? AND COALESCE(paid_date, due_date, created_at) <= ?", start, end).
+		Group("DATE(COALESCE(paid_date, due_date, created_at))").
+		Order("day ASC").
 		Scan(&incomes).Error
 	return incomes, err
 }
@@ -150,7 +166,7 @@ func (r *FeeRepository) GetTenantRanking(limit int, start, end time.Time) ([]Ten
 	err := r.db.Model(&model.Fee{}).
 		Select("fees.tenant_id, tenants.name as tenant_name, COALESCE(SUM(fees.amount), 0) as amount").
 		Joins("LEFT JOIN tenants ON fees.tenant_id = tenants.id").
-		Where("fees.status = 'paid' AND fees.paid_date >= ? AND fees.paid_date <= ?", start, end).
+		Where("fees.status = 'paid' AND COALESCE(fees.paid_date, fees.due_date, fees.created_at) >= ? AND COALESCE(fees.paid_date, fees.due_date, fees.created_at) <= ?", start, end).
 		Group("fees.tenant_id, tenants.name").
 		Order("amount DESC").
 		Limit(limit).

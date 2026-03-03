@@ -31,31 +31,80 @@ func NewReportService(
 }
 
 type IncomeReport struct {
-	Total   float64                     `json:"total"`
-	ByMonth []repository.IncomeByMonth  `json:"byMonth"`
-	ByType  []repository.FeeComposition `json:"byType"`
+	Total  float64                     `json:"total"`
+	ByDay  []repository.IncomeByDay    `json:"byDay"`
+	ByType []repository.FeeComposition `json:"byType"`
 }
 
 func (s *ReportService) GetIncomeReport(start, end time.Time, groupBy string) (*IncomeReport, error) {
-	total, err := s.feeRepo.SumByPeriod(start, end)
+	// 获取实际支付的费用
+	actualTotal, err := s.feeRepo.SumByPeriod(start, end)
 	if err != nil {
 		return nil, err
 	}
 
-	byMonth, err := s.feeRepo.GetIncomeByMonth(start, end)
+	// 获取合同预期收入
+	contractTotal, err := s.contractRepo.GetTotalIncomeByPeriod(start, end)
 	if err != nil {
 		return nil, err
 	}
 
+	// 总收入 = 实际支付 + 合同预期收入
+	total := actualTotal + contractTotal
+
+	// 获取按天统计的实际支付收入
+	actualByDay, err := s.feeRepo.GetIncomeByDay(start, end)
+	if err != nil {
+		return nil, err
+	}
+
+	// 获取按天统计的合同预期收入
+	contractByDay, err := s.contractRepo.GetIncomeByDay(start, end)
+	if err != nil {
+		return nil, err
+	}
+
+	// 合并按天收入：实际支付 + 合同预期
+	combinedByDay := make([]repository.IncomeByDay, 0)
+	dayMap := make(map[string]float64)
+
+	// 添加实际支付收入
+	for _, item := range actualByDay {
+		dayMap[item.Day] += item.Amount
+	}
+
+	// 添加合同预期收入
+	for _, item := range contractByDay {
+		dayMap[item.Day] += item.Amount
+	}
+
+	// 转换为切片
+	for day, amount := range dayMap {
+		combinedByDay = append(combinedByDay, repository.IncomeByDay{
+			Day:    day,
+			Amount: amount,
+		})
+	}
+
+	// 按日期排序
+	for i := 0; i < len(combinedByDay); i++ {
+		for j := i + 1; j < len(combinedByDay); j++ {
+			if combinedByDay[i].Day > combinedByDay[j].Day {
+				combinedByDay[i], combinedByDay[j] = combinedByDay[j], combinedByDay[i]
+			}
+		}
+	}
+
+	// 获取费用类型构成（仅实际支付）
 	byType, err := s.feeRepo.GetComposition(start, end)
 	if err != nil {
 		return nil, err
 	}
 
 	return &IncomeReport{
-		Total:   total,
-		ByMonth: byMonth,
-		ByType:  byType,
+		Total:  total,
+		ByDay:  combinedByDay,
+		ByType: byType,
 	}, nil
 }
 
@@ -96,6 +145,7 @@ func (s *ReportService) GetOccupancyReport(start, end time.Time) (*OccupancyRepo
 }
 
 func (s *ReportService) GetFeeComposition(start, end time.Time) ([]repository.FeeComposition, error) {
+	// 费用构成基于实际支付的费用
 	return s.feeRepo.GetComposition(start, end)
 }
 
@@ -122,6 +172,7 @@ func (s *ReportService) GetMaintenanceStats(start, end time.Time) (*MaintenanceR
 }
 
 func (s *ReportService) GetTenantRanking(limit int, start, end time.Time) ([]repository.TenantFeeRanking, error) {
+	// 租户排名基于实际支付的费用
 	return s.feeRepo.GetTenantRanking(limit, start, end)
 }
 
@@ -197,24 +248,8 @@ func (s *ReportService) GetDashboardData() (*DashboardData, error) {
 		occupancyRate = float64(occupiedRooms) / float64(totalRooms) * 100
 	}
 
-	// 生成收入图表数据（最近6个月）
-	incomeChart := make([]IncomeChartData, 0)
-	now := time.Now()
-	for i := 5; i >= 0; i-- {
-		// 使用 AddDate 方法减去月份
-		startDate := now.AddDate(0, -i, 0)
-		// 将日期设置为当月第一天
-		startDate = time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, startDate.Location())
-
-		startOfMonth := time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, startDate.Location())
-		endOfMonth := startOfMonth.AddDate(0, 1, -1)
-
-		monthlyIncome, _ := s.feeRepo.SumByPeriod(startOfMonth, endOfMonth)
-		incomeChart = append(incomeChart, IncomeChartData{
-			Date:   startOfMonth.Format("2006-01"),
-			Amount: monthlyIncome,
-		})
-	}
+	// 生成收入图表数据（2025年全年，按月）
+	incomeChart := s.UpdateDashboardIncomeChart()
 
 	// 生成维修状态图表数据
 	maintenanceStatusChart := make([]MaintenanceStatusChartData, 0)
