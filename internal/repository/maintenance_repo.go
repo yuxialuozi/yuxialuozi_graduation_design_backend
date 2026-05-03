@@ -45,7 +45,7 @@ func (r *MaintenanceRepository) Delete(id uint) error {
 	return r.db.Delete(&model.Maintenance{}, id).Error
 }
 
-func (r *MaintenanceRepository) List(page, pageSize int, keyword, maintenanceType, status, priority string) ([]model.Maintenance, int64, error) {
+func (r *MaintenanceRepository) List(page, pageSize int, keyword, maintenanceType, status, priority string, tenantID uint) ([]model.Maintenance, int64, error) {
 	var maintenances []model.Maintenance
 	var total int64
 
@@ -62,6 +62,9 @@ func (r *MaintenanceRepository) List(page, pageSize int, keyword, maintenanceTyp
 	}
 	if priority != "" {
 		query = query.Where("priority = ?", priority)
+	}
+	if tenantID > 0 {
+		query = query.Where("tenant_id = ?", tenantID)
 	}
 
 	query.Count(&total)

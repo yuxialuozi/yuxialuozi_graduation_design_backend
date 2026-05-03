@@ -2,6 +2,7 @@ package handler
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -240,10 +241,21 @@ func (h *FeeHandler) Pay(c *gin.Context) {
 
 	var req dto.PayFeeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		req.PaidDate = nil
+		response.BadRequest(c, "无效的请求参数")
+		return
 	}
 
-	if err := h.feeService.Pay(uint(id), req.PaidDate); err != nil {
+	var paidDate *time.Time
+	if req.PaidDate != "" {
+		parsed, err := time.Parse("2006-01-02", req.PaidDate)
+		if err != nil {
+			response.BadRequest(c, "无效的日期格式，请使用 2006-01-02")
+			return
+		}
+		paidDate = &parsed
+	}
+
+	if err := h.feeService.Pay(uint(id), paidDate); err != nil {
 		response.InternalError(c, "确认缴费失败")
 		return
 	}

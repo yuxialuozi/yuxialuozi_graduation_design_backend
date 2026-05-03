@@ -49,7 +49,7 @@ func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
 	}
 
 	expire, _ := time.ParseDuration(s.config.JWT.Expire)
-	token, err := utils.GenerateToken(user.ID, user.Username, user.Role, s.config.JWT.Secret, expire)
+	token, err := utils.GenerateToken(user.ID, user.Username, user.Role, user.TenantID, s.config.JWT.Secret, expire)
 	if err != nil {
 		return nil, errors.New("生成 token 失败")
 	}
@@ -62,6 +62,7 @@ func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
 		Avatar:      user.Avatar,
 		Role:        user.Role,
 		Permissions: []string(user.Permissions),
+		TenantID:    user.TenantID,
 		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
 	}
@@ -73,8 +74,43 @@ func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
 	}, nil
 }
 
-func (s *AuthService) GetCurrentUser(userID uint) (*model.User, error) {
-	return s.userRepo.FindByID(userID)
+func (s *AuthService) GetCurrentUser(userID uint) (*model.UserResponse, error) {
+	user, err := s.userRepo.FindByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	return &model.UserResponse{
+		ID:          user.ID,
+		Username:    user.Username,
+		Nickname:    user.Nickname,
+		Avatar:      user.Avatar,
+		Role:        user.Role,
+		Permissions: []string(user.Permissions),
+		TenantID:    user.TenantID,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+	}, nil
+}
+
+func (s *AuthService) ChangePassword(userID uint, oldPassword, newPassword string) error {
+	user, err := s.userRepo.FindByID(userID)
+	if err != nil {
+		return errors.New("用户不存在")
+	}
+
+	// 验证旧密码
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
+		return errors.New("原密码错误")
+	}
+
+	// 加密新密码
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return errors.New("密码加密失败")
+	}
+
+	user.Password = string(hashedPassword)
+	return s.userRepo.Update(user)
 }
 
 func (s *AuthService) CreateDefaultAdmin() error {

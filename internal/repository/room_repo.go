@@ -45,7 +45,7 @@ func (r *RoomRepository) Delete(id uint) error {
 	return r.db.Delete(&model.Room{}, id).Error
 }
 
-func (r *RoomRepository) List(page, pageSize int, keyword, building, status string) ([]model.Room, int64, error) {
+func (r *RoomRepository) List(page, pageSize int, keyword, building, status string, tenantID uint) ([]model.Room, int64, error) {
 	var rooms []model.Room
 	var total int64
 
@@ -59,6 +59,9 @@ func (r *RoomRepository) List(page, pageSize int, keyword, building, status stri
 	}
 	if status != "" {
 		query = query.Where("status = ?", status)
+	}
+	if tenantID > 0 {
+		query = query.Where("tenant_id = ?", tenantID)
 	}
 
 	query.Count(&total)
@@ -99,4 +102,13 @@ func (r *RoomRepository) GetBuildings() ([]string, error) {
 		return nil, err
 	}
 	return buildings, nil
+}
+
+// FindByTenantID 根据租户ID查找房间
+func (r *RoomRepository) FindByTenantID(tenantID uint) ([]model.Room, error) {
+	var rooms []model.Room
+	if err := r.db.Where("tenant_id = ?", tenantID).Find(&rooms).Error; err != nil {
+		return nil, err
+	}
+	return rooms, nil
 }

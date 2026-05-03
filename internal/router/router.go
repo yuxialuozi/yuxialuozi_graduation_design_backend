@@ -15,16 +15,18 @@ import (
 var ProviderSet = wire.NewSet(NewRouter)
 
 type Router struct {
-	engine             *gin.Engine
-	config             *config.Config
-	authHandler        *handler.AuthHandler
-	tenantHandler      *handler.TenantHandler
-	contractHandler    *handler.ContractHandler
-	roomHandler        *handler.RoomHandler
-	feeHandler         *handler.FeeHandler
-	maintenanceHandler *handler.MaintenanceHandler
-	reportHandler      *handler.ReportHandler
-	authService        *service.AuthService
+	engine              *gin.Engine
+	config              *config.Config
+	authHandler         *handler.AuthHandler
+	tenantHandler       *handler.TenantHandler
+	contractHandler     *handler.ContractHandler
+	roomHandler         *handler.RoomHandler
+	feeHandler          *handler.FeeHandler
+	maintenanceHandler  *handler.MaintenanceHandler
+	reportHandler       *handler.ReportHandler
+	tenantPortalHandler *handler.TenantPortalHandler
+	userHandler         *handler.UserHandler
+	authService         *service.AuthService
 }
 
 func NewRouter(
@@ -37,6 +39,8 @@ func NewRouter(
 	feeHandler *handler.FeeHandler,
 	maintenanceHandler *handler.MaintenanceHandler,
 	reportHandler *handler.ReportHandler,
+	tenantPortalHandler *handler.TenantPortalHandler,
+	userHandler *handler.UserHandler,
 ) *Router {
 	if config.Server.Mode == "release" {
 		gin.SetMode(gin.ReleaseMode)
@@ -45,16 +49,18 @@ func NewRouter(
 	engine := gin.New()
 
 	r := &Router{
-		engine:             engine,
-		config:             config,
-		authHandler:        authHandler,
-		authService:        authService,
-		tenantHandler:      tenantHandler,
-		contractHandler:    contractHandler,
-		roomHandler:        roomHandler,
-		feeHandler:         feeHandler,
-		maintenanceHandler: maintenanceHandler,
-		reportHandler:      reportHandler,
+		engine:              engine,
+		config:              config,
+		authHandler:         authHandler,
+		authService:         authService,
+		tenantHandler:       tenantHandler,
+		contractHandler:     contractHandler,
+		roomHandler:         roomHandler,
+		feeHandler:          feeHandler,
+		maintenanceHandler:  maintenanceHandler,
+		reportHandler:       reportHandler,
+		tenantPortalHandler: tenantPortalHandler,
+		userHandler:         userHandler,
 	}
 
 	r.setupMiddlewares()
@@ -81,16 +87,18 @@ func (r *Router) setupRoutes() {
 			auth.POST("/login", r.authHandler.Login)
 		}
 
-		// Protected routes
+		// Protected routes (all require JWT authentication)
 		protected := api.Group("")
 		protected.Use(middleware.JWTAuth(r.config))
 		{
-			// Auth (protected)
+			// Auth (protected, all authenticated users)
 			protected.GET("/auth/me", r.authHandler.GetCurrentUser)
 			protected.POST("/auth/logout", r.authHandler.Logout)
+			protected.POST("/auth/change-password", r.authHandler.ChangePassword)
 
-			// Tenants
+			// Tenants (管理端API，仅admin可访问)
 			tenants := protected.Group("/tenants")
+			tenants.Use(middleware.RequireAdmin())
 			{
 				tenants.GET("", r.tenantHandler.List)
 				tenants.GET("/:id", r.tenantHandler.GetByID)
@@ -99,8 +107,9 @@ func (r *Router) setupRoutes() {
 				tenants.DELETE("/:id", r.tenantHandler.Delete)
 			}
 
-			// Contracts
+			// Contracts (管理端API，仅admin可访问)
 			contracts := protected.Group("/contracts")
+			contracts.Use(middleware.RequireAdmin())
 			{
 				contracts.GET("", r.contractHandler.List)
 				contracts.GET("/:id", r.contractHandler.GetByID)
@@ -109,8 +118,9 @@ func (r *Router) setupRoutes() {
 				contracts.DELETE("/:id", r.contractHandler.Delete)
 			}
 
-			// Rooms
+			// Rooms (管理端API，仅admin可访问)
 			rooms := protected.Group("/rooms")
+			rooms.Use(middleware.RequireAdmin())
 			{
 				rooms.GET("", r.roomHandler.List)
 				rooms.GET("/:id", r.roomHandler.GetByID)
@@ -120,8 +130,9 @@ func (r *Router) setupRoutes() {
 				rooms.POST("/:id/assign", r.roomHandler.AssignTenant)
 			}
 
-			// Fees
+			// Fees (管理端API，仅admin可访问)
 			fees := protected.Group("/fees")
+			fees.Use(middleware.RequireAdmin())
 			{
 				fees.GET("", r.feeHandler.List)
 				fees.GET("/:id", r.feeHandler.GetByID)
@@ -131,8 +142,9 @@ func (r *Router) setupRoutes() {
 				fees.POST("/:id/pay", r.feeHandler.Pay)
 			}
 
-			// Maintenance
+			// Maintenance (管理端API，仅admin可访问)
 			maintenance := protected.Group("/maintenance")
+			maintenance.Use(middleware.RequireAdmin())
 			{
 				maintenance.GET("", r.maintenanceHandler.List)
 				maintenance.GET("/:id", r.maintenanceHandler.GetByID)
@@ -143,8 +155,9 @@ func (r *Router) setupRoutes() {
 				maintenance.POST("/:id/complete", r.maintenanceHandler.Complete)
 			}
 
-			// Reports
+			// Reports (管理端API，仅admin可访问)
 			reports := protected.Group("/reports")
+			reports.Use(middleware.RequireAdmin())
 			{
 				reports.GET("/income", r.reportHandler.GetIncome)
 				reports.GET("/occupancy", r.reportHandler.GetOccupancy)
@@ -152,6 +165,27 @@ func (r *Router) setupRoutes() {
 				reports.GET("/maintenance/stats", r.reportHandler.GetMaintenanceStats)
 				reports.GET("/tenants/ranking", r.reportHandler.GetTenantRanking)
 				reports.GET("/dashboard", r.reportHandler.GetDashboard)
+			}
+
+			// Tenant Portal (租户端API，仅user角色可访问)
+			tenant := protected.Group("/tenant")
+			tenant.Use(middleware.RequireUser())
+			{
+				tenant.GET("/profile", r.tenantPortalHandler.GetProfile)
+				tenant.GET("/contracts", r.tenantPortalHandler.GetContracts)
+				tenant.GET("/rooms", r.tenantPortalHandler.GetRooms)
+				tenant.GET("/fees", r.tenantPortalHandler.GetFees)
+				tenant.POST("/fees/:id/pay", r.tenantPortalHandler.PayFee)
+				tenant.GET("/maintenance", r.tenantPortalHandler.GetMaintenance)
+				tenant.POST("/maintenance", r.tenantPortalHandler.CreateMaintenance)
+				tenant.GET("/dashboard", r.tenantPortalHandler.GetDashboard)
+			}
+
+			// Users (用户管理，仅admin可访问)
+			users := protected.Group("/users")
+			users.Use(middleware.RequireAdmin())
+			{
+				users.POST("", r.userHandler.CreateUser)
 			}
 		}
 	}

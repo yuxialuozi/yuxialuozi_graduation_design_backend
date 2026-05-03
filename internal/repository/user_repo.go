@@ -55,3 +55,15 @@ func (r *UserRepository) List(page, pageSize int) ([]model.User, int64, error) {
 
 	return users, total, nil
 }
+
+// CreateUser 创建用户（仅用户名、密码、昵称、角色、租户ID）
+func (r *UserRepository) CreateUser(username, password, nickname, role string, tenantID uint) error {
+	user := &model.User{
+		Username: username,
+		Password: password,
+		Nickname: nickname,
+		Role:     role,
+		TenantID: tenantID,
+	}
+	return r.db.Create(user).Error
+}

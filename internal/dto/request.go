@@ -6,10 +6,25 @@ import (
 	"yuxialuozi_graduation_design_backend/internal/model"
 )
 
+// Common
+type ListRequest struct {
+	Page     int `form:"page,default=1"`
+	PageSize int `form:"pageSize,default=10"`
+}
+
+type IDRequest struct {
+	ID uint `uri:"id" binding:"required"`
+}
+
 // Auth
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type ChangePasswordRequest struct {
+	OldPassword string `json:"oldPassword" binding:"required"`
+	NewPassword string `json:"newPassword" binding:"required,min=6"`
 }
 
 // Tenant
@@ -127,15 +142,15 @@ type FeeListRequest struct {
 }
 
 type PayFeeRequest struct {
-	PaidDate *time.Time `json:"paidDate"`
+	PaidDate string `json:"paidDate"` // 缴费日期，格式：2006-01-02
 }
 
 // Maintenance
 type CreateMaintenanceRequest struct {
-	TenantID    uint   `json:"tenantId" binding:"required"`
+	TenantID    uint   `json:"tenantId"` // 可选，租户端会自动填充
 	RoomNo      string `json:"roomNo"`
-	Type        string `json:"type"`
-	Description string `json:"description"`
+	Type        string `json:"type" binding:"required"`
+	Description string `json:"description" binding:"required"`
 	Priority    string `json:"priority"`
 }
 

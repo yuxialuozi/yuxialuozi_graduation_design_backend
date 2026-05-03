@@ -39,8 +39,8 @@ func (s *MaintenanceService) Delete(id uint) error {
 	return s.maintenanceRepo.Delete(id)
 }
 
-func (s *MaintenanceService) List(page, pageSize int, keyword, maintenanceType, status, priority string) ([]model.Maintenance, int64, error) {
-	return s.maintenanceRepo.List(page, pageSize, keyword, maintenanceType, status, priority)
+func (s *MaintenanceService) List(page, pageSize int, keyword, maintenanceType, status, priority string, tenantID uint) ([]model.Maintenance, int64, error) {
+	return s.maintenanceRepo.List(page, pageSize, keyword, maintenanceType, status, priority, tenantID)
 }
 
 func (s *MaintenanceService) Assign(id uint, assignee string) error {

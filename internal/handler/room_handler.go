@@ -48,7 +48,7 @@ func (h *RoomHandler) List(c *gin.Context) {
 		req.PageSize = 10
 	}
 
-	rooms, total, err := h.roomService.List(req.Page, req.PageSize, req.Keyword, req.Building, req.Status)
+	rooms, total, err := h.roomService.List(req.Page, req.PageSize, req.Keyword, req.Building, req.Status, 0)
 	if err != nil {
 		response.InternalError(c, "获取房间列表失败")
 		return

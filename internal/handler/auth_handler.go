@@ -54,7 +54,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.Response{data=model.User} "获取成功"
+// @Success 200 {object} response.Response{data=model.UserResponse} "获取成功"
 // @Failure 401 {object} response.Response "未登录"
 // @Failure 404 {object} response.Response "用户不存在"
 // @Router /auth/me [get]
@@ -85,4 +85,38 @@ func (h *AuthHandler) GetCurrentUser(c *gin.Context) {
 // @Router /auth/logout [post]
 func (h *AuthHandler) Logout(c *gin.Context) {
 	response.Success(c, nil)
+}
+
+// ChangePassword godoc
+// @Summary 修改密码
+// @Description 当前用户修改自己的密码
+// @Tags 认证
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dto.ChangePasswordRequest true "密码修改请求"
+// @Success 200 {object} response.Response "修改成功"
+// @Failure 400 {object} response.Response "请求参数错误"
+// @Failure 401 {object} response.Response "原密码错误"
+// @Router /auth/change-password [post]
+func (h *AuthHandler) ChangePassword(c *gin.Context) {
+	userID := middleware.GetUserID(c)
+	if userID == 0 {
+		response.Unauthorized(c, "请先登录")
+		return
+	}
+
+	var req dto.ChangePasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "请求参数错误，新密码至少6位")
+		return
+	}
+
+	err := h.authService.ChangePassword(userID, req.OldPassword, req.NewPassword)
+	if err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	response.Success(c, "密码修改成功")
 }

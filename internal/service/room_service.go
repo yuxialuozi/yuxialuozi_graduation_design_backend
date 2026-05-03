@@ -35,8 +35,8 @@ func (s *RoomService) Delete(id uint) error {
 	return s.roomRepo.Delete(id)
 }
 
-func (s *RoomService) List(page, pageSize int, keyword, building, status string) ([]model.Room, int64, error) {
-	return s.roomRepo.List(page, pageSize, keyword, building, status)
+func (s *RoomService) List(page, pageSize int, keyword, building, status string, tenantID uint) ([]model.Room, int64, error) {
+	return s.roomRepo.List(page, pageSize, keyword, building, status, tenantID)
 }
 
 func (s *RoomService) AssignTenant(roomID uint, tenantID uint) error {

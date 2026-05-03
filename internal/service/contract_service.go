@@ -39,8 +39,8 @@ func (s *ContractService) Delete(id uint) error {
 	return s.contractRepo.Delete(id)
 }
 
-func (s *ContractService) List(page, pageSize int, keyword, status string, startDateFrom, startDateTo *time.Time) ([]model.Contract, int64, error) {
-	return s.contractRepo.List(page, pageSize, keyword, status, startDateFrom, startDateTo)
+func (s *ContractService) List(page, pageSize int, keyword, status string, startDateFrom, startDateTo *time.Time, tenantID uint) ([]model.Contract, int64, error) {
+	return s.contractRepo.List(page, pageSize, keyword, status, startDateFrom, startDateTo, tenantID)
 }
 
 func (s *ContractService) generateContractNo() string {

@@ -64,7 +64,7 @@ func (h *ContractHandler) List(c *gin.Context) {
 		}
 	}
 
-	contracts, total, err := h.contractService.List(req.Page, req.PageSize, req.Keyword, req.Status, startDateFrom, startDateTo)
+	contracts, total, err := h.contractService.List(req.Page, req.PageSize, req.Keyword, req.Status, startDateFrom, startDateTo, 0)
 	if err != nil {
 		response.InternalError(c, "获取合同列表失败")
 		return

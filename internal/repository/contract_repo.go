@@ -45,7 +45,7 @@ func (r *ContractRepository) Delete(id uint) error {
 	return r.db.Delete(&model.Contract{}, id).Error
 }
 
-func (r *ContractRepository) List(page, pageSize int, keyword, status string, startDateFrom, startDateTo *time.Time) ([]model.Contract, int64, error) {
+func (r *ContractRepository) List(page, pageSize int, keyword, status string, startDateFrom, startDateTo *time.Time, tenantID uint) ([]model.Contract, int64, error) {
 	var contracts []model.Contract
 	var total int64
 
@@ -62,6 +62,9 @@ func (r *ContractRepository) List(page, pageSize int, keyword, status string, st
 	}
 	if startDateTo != nil {
 		query = query.Where("start_date <= ?", startDateTo)
+	}
+	if tenantID > 0 {
+		query = query.Where("tenant_id = ?", tenantID)
 	}
 
 	query.Count(&total)

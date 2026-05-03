@@ -49,7 +49,7 @@ func (h *MaintenanceHandler) List(c *gin.Context) {
 		req.PageSize = 10
 	}
 
-	maintenances, total, err := h.maintenanceService.List(req.Page, req.PageSize, req.Keyword, req.Type, req.Status, req.Priority)
+	maintenances, total, err := h.maintenanceService.List(req.Page, req.PageSize, req.Keyword, req.Type, req.Status, req.Priority, 0)
 	if err != nil {
 		response.InternalError(c, "获取维修工单列表失败")
 		return

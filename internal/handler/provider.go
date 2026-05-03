@@ -12,4 +12,6 @@ var ProviderSet = wire.NewSet(
 	NewFeeHandler,
 	NewMaintenanceHandler,
 	NewReportHandler,
+	NewTenantPortalHandler,
+	NewUserHandler,
 )
