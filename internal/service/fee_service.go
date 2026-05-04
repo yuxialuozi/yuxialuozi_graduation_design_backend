@@ -19,8 +19,18 @@ func NewFeeService(feeRepo *repository.FeeRepository, tenantRepo *repository.Ten
 	}
 }
 
-func (s *FeeService) Create(fee *model.Fee) error {
-	return s.feeRepo.Create(fee)
+func (s *FeeService) Create(fee *model.Fee) (*model.Fee, error) {
+	if err := s.feeRepo.Create(fee); err != nil {
+		return nil, err
+	}
+	// 设置 TenantName
+	if fee.TenantID > 0 {
+		tenant, err := s.tenantRepo.FindByID(fee.TenantID)
+		if err == nil && tenant != nil {
+			fee.TenantName = tenant.Name
+		}
+	}
+	return fee, nil
 }
 
 func (s *FeeService) GetByID(id uint) (*model.Fee, error) {

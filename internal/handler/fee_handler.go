@@ -121,12 +121,13 @@ func (h *FeeHandler) Create(c *gin.Context) {
 		fee.Status = "unpaid"
 	}
 
-	if err := h.feeService.Create(fee); err != nil {
+	createdFee, err := h.feeService.Create(fee)
+	if err != nil {
 		response.InternalError(c, "创建费用记录失败")
 		return
 	}
 
-	response.Success(c, fee)
+	response.Success(c, createdFee)
 }
 
 // Update godoc

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"yuxialuozi_graduation_design_backend/internal/model"
@@ -20,11 +21,21 @@ func NewMaintenanceService(maintenanceRepo *repository.MaintenanceRepository, te
 	}
 }
 
-func (s *MaintenanceService) Create(maintenance *model.Maintenance) error {
+func (s *MaintenanceService) Create(maintenance *model.Maintenance) (*model.Maintenance, error) {
 	if maintenance.TicketNo == "" {
 		maintenance.TicketNo = s.generateTicketNo()
 	}
-	return s.maintenanceRepo.Create(maintenance)
+	if err := s.maintenanceRepo.Create(maintenance); err != nil {
+		return nil, err
+	}
+	// 设置 TenantName
+	if maintenance.TenantID > 0 {
+		tenant, err := s.tenantRepo.FindByID(maintenance.TenantID)
+		if err == nil && tenant != nil {
+			maintenance.TenantName = tenant.Name
+		}
+	}
+	return maintenance, nil
 }
 
 func (s *MaintenanceService) GetByID(id uint) (*model.Maintenance, error) {
@@ -72,5 +83,7 @@ func (s *MaintenanceService) Complete(id uint, completedAt *time.Time) error {
 }
 
 func (s *MaintenanceService) generateTicketNo() string {
-	return fmt.Sprintf("WX%s%04d", time.Now().Format("20060102"), time.Now().UnixNano()%10000)
+	// 使用更好的随机数生成器，避免重复
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return fmt.Sprintf("WX%s%04d", time.Now().Format("20060102"), r.Intn(10000))
 }

@@ -133,12 +133,13 @@ func (h *ContractHandler) Create(c *gin.Context) {
 		contract.Status = "draft"
 	}
 
-	if err := h.contractService.Create(contract); err != nil {
+	createdContract, err := h.contractService.Create(contract)
+	if err != nil {
 		response.InternalError(c, "创建合同失败")
 		return
 	}
 
-	response.Success(c, contract)
+	response.Success(c, createdContract)
 }
 
 // Update godoc

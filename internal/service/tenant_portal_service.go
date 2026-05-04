@@ -11,12 +11,13 @@ import (
 
 // TenantPortalService 租户端服务
 type TenantPortalService struct {
-	tenantRepo     *repository.TenantRepository
-	contractRepo   *repository.ContractRepository
-	roomRepo       *repository.RoomRepository
-	feeRepo        *repository.FeeRepository
+	tenantRepo      *repository.TenantRepository
+	contractRepo    *repository.ContractRepository
+	roomRepo        *repository.RoomRepository
+	feeRepo         *repository.FeeRepository
 	maintenanceRepo *repository.MaintenanceRepository
-	userRepo       *repository.UserRepository
+	maintenanceService *MaintenanceService
+	userRepo        *repository.UserRepository
 }
 
 func NewTenantPortalService(
@@ -25,15 +26,17 @@ func NewTenantPortalService(
 	roomRepo *repository.RoomRepository,
 	feeRepo *repository.FeeRepository,
 	maintenanceRepo *repository.MaintenanceRepository,
+	maintenanceService *MaintenanceService,
 	userRepo *repository.UserRepository,
 ) *TenantPortalService {
 	return &TenantPortalService{
-		tenantRepo:      tenantRepo,
-		contractRepo:    contractRepo,
-		roomRepo:        roomRepo,
-		feeRepo:         feeRepo,
-		maintenanceRepo: maintenanceRepo,
-		userRepo:        userRepo,
+		tenantRepo:         tenantRepo,
+		contractRepo:       contractRepo,
+		roomRepo:           roomRepo,
+		feeRepo:            feeRepo,
+		maintenanceRepo:    maintenanceRepo,
+		maintenanceService: maintenanceService,
+		userRepo:           userRepo,
 	}
 }
 
@@ -246,7 +249,9 @@ func (s *TenantPortalService) CreateMaintenance(tenantID uint, username string, 
 		TenantName:  tenant.Name,
 	}
 
-	return s.maintenanceRepo.Create(maintenance)
+	// 使用 MaintenanceService 来创建（会自动生成工单号）
+	_, err = s.maintenanceService.Create(maintenance)
+	return err
 }
 
 // GetDashboard 获取租户仪表盘数据

@@ -117,12 +117,13 @@ func (h *MaintenanceHandler) Create(c *gin.Context) {
 		maintenance.Priority = "medium"
 	}
 
-	if err := h.maintenanceService.Create(maintenance); err != nil {
+	createdMaintenance, err := h.maintenanceService.Create(maintenance)
+	if err != nil {
 		response.InternalError(c, "创建维修工单失败")
 		return
 	}
 
-	response.Success(c, maintenance)
+	response.Success(c, createdMaintenance)
 }
 
 // Update godoc

@@ -20,11 +20,21 @@ func NewContractService(contractRepo *repository.ContractRepository, tenantRepo 
 	}
 }
 
-func (s *ContractService) Create(contract *model.Contract) error {
+func (s *ContractService) Create(contract *model.Contract) (*model.Contract, error) {
 	if contract.ContractNo == "" {
 		contract.ContractNo = s.generateContractNo()
 	}
-	return s.contractRepo.Create(contract)
+	if err := s.contractRepo.Create(contract); err != nil {
+		return nil, err
+	}
+	// 设置 TenantName
+	if contract.TenantID > 0 {
+		tenant, err := s.tenantRepo.FindByID(contract.TenantID)
+		if err == nil && tenant != nil {
+			contract.TenantName = tenant.Name
+		}
+	}
+	return contract, nil
 }
 
 func (s *ContractService) GetByID(id uint) (*model.Contract, error) {

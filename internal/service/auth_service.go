@@ -30,12 +30,9 @@ type LoginRequest struct {
 }
 
 // LoginResponse represents the response for login API.
-// @Description LoginResponse represents the response for login API with JWT token and user info.
 type LoginResponse struct {
-	Token    string              `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
-	UserInfo *model.UserResponse `json:"userInfo"` // 改为 userInfo 字段，匹配前端期望
-	// 保留 user 字段做兼容
-	User *model.UserResponse `json:"-"` // 不在JSON中输出，但保留用于内部使用
+	Token string              `json:"token"`
+	User  *model.UserResponse `json:"user"` // 与前端 LoginResult 的 user 字段匹配
 }
 
 func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
@@ -68,9 +65,8 @@ func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
 	}
 
 	return &LoginResponse{
-		Token:    token,
-		UserInfo: userResponse,
-		User:     userResponse,
+		Token: token,
+		User:  userResponse,
 	}, nil
 }
 
