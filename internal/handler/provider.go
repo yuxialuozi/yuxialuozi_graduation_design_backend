@@ -14,4 +14,5 @@ var ProviderSet = wire.NewSet(
 	NewReportHandler,
 	NewTenantPortalHandler,
 	NewUserHandler,
+	NewAIHandler,
 )

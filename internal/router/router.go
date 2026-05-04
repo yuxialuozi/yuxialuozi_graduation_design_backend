@@ -26,6 +26,7 @@ type Router struct {
 	reportHandler       *handler.ReportHandler
 	tenantPortalHandler *handler.TenantPortalHandler
 	userHandler         *handler.UserHandler
+	aiHandler           *handler.AIHandler
 	authService         *service.AuthService
 }
 
@@ -41,6 +42,7 @@ func NewRouter(
 	reportHandler *handler.ReportHandler,
 	tenantPortalHandler *handler.TenantPortalHandler,
 	userHandler *handler.UserHandler,
+	aiHandler *handler.AIHandler,
 ) *Router {
 	if config.Server.Mode == "release" {
 		gin.SetMode(gin.ReleaseMode)
@@ -61,6 +63,7 @@ func NewRouter(
 		reportHandler:       reportHandler,
 		tenantPortalHandler: tenantPortalHandler,
 		userHandler:         userHandler,
+		aiHandler:           aiHandler,
 	}
 
 	r.setupMiddlewares()
@@ -179,6 +182,12 @@ func (r *Router) setupRoutes() {
 				tenant.GET("/maintenance", r.tenantPortalHandler.GetMaintenance)
 				tenant.POST("/maintenance", r.tenantPortalHandler.CreateMaintenance)
 				tenant.GET("/dashboard", r.tenantPortalHandler.GetDashboard)
+			}
+
+			// AI 助手 (所有认证用户可用，handler根据JWT role决定使用哪个系统提示词)
+			ai := protected.Group("/ai")
+			{
+				ai.POST("/chat", r.aiHandler.Chat)
 			}
 
 			// Users (用户管理，仅admin可访问)

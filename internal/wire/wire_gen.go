@@ -49,7 +49,9 @@ func InitializeApp() (*router.Router, func(), error) {
 	tenantPortalService := service.NewTenantPortalService(tenantRepository, contractRepository, roomRepository, feeRepository, maintenanceRepository, maintenanceService, userRepository)
 	tenantPortalHandler := handler.NewTenantPortalHandler(tenantPortalService)
 	userHandler := handler.NewUserHandler(userRepository)
-	routerRouter := router.NewRouter(configConfig, authHandler, authService, tenantHandler, contractHandler, roomHandler, feeHandler, maintenanceHandler, reportHandler, tenantPortalHandler, userHandler)
+	aiService := service.NewAIService()
+	aiHandler := handler.NewAIHandler(aiService)
+	routerRouter := router.NewRouter(configConfig, authHandler, authService, tenantHandler, contractHandler, roomHandler, feeHandler, maintenanceHandler, reportHandler, tenantPortalHandler, userHandler, aiHandler)
 	return routerRouter, func() {
 	}, nil
 }
