@@ -120,3 +120,59 @@ func (h *AuthHandler) ChangePassword(c *gin.Context) {
 
 	response.Success(c, "密码修改成功")
 }
+
+// GetProfile godoc
+// @Summary 获取个人资料
+// @Description 获取当前登录用户的详细资料
+// @Tags 认证
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response{data=model.UserResponse}
+// @Router /profile [get]
+func (h *AuthHandler) GetProfile(c *gin.Context) {
+	userID := middleware.GetUserID(c)
+	if userID == 0 {
+		response.Unauthorized(c, "请先登录")
+		return
+	}
+
+	user, err := h.authService.GetCurrentUser(userID)
+	if err != nil {
+		response.NotFound(c, "用户不存在")
+		return
+	}
+
+	response.Success(c, user)
+}
+
+// UpdateProfile godoc
+// @Summary 更新个人资料
+// @Description 更新当前登录用户的资料（昵称、手机、邮箱）
+// @Tags 认证
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dto.UpdateProfileRequest true "个人资料"
+// @Success 200 {object} response.Response
+// @Router /profile [put]
+func (h *AuthHandler) UpdateProfile(c *gin.Context) {
+	userID := middleware.GetUserID(c)
+	if userID == 0 {
+		response.Unauthorized(c, "请先登录")
+		return
+	}
+
+	var req dto.UpdateProfileRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "请求参数错误")
+		return
+	}
+
+	err := h.authService.UpdateProfile(userID, req.Nickname, req.Phone, req.Email)
+	if err != nil {
+		response.InternalError(c, "更新资料失败")
+		return
+	}
+
+	response.Success(c, "资料更新成功")
+}

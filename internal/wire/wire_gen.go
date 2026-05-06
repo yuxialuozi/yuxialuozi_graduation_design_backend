@@ -10,6 +10,7 @@ import (
 	"yuxialuozi_graduation_design_backend/internal/config"
 	"yuxialuozi_graduation_design_backend/internal/database"
 	"yuxialuozi_graduation_design_backend/internal/handler"
+	"yuxialuozi_graduation_design_backend/internal/mcp"
 	"yuxialuozi_graduation_design_backend/internal/repository"
 	"yuxialuozi_graduation_design_backend/internal/router"
 	"yuxialuozi_graduation_design_backend/internal/service"
@@ -50,7 +51,9 @@ func InitializeApp() (*router.Router, func(), error) {
 	tenantPortalHandler := handler.NewTenantPortalHandler(tenantPortalService)
 	userHandler := handler.NewUserHandler(userRepository)
 	aiService := service.NewAIService()
-	aiHandler := handler.NewAIHandler(aiService)
+	toolExecutor := mcp.NewToolExecutor(db)
+	aiHandler := handler.NewAIHandler(aiService, toolExecutor)
+	// No new service needed for userHandler since it uses userRepository directly (thin handler pattern)
 	routerRouter := router.NewRouter(configConfig, authHandler, authService, tenantHandler, contractHandler, roomHandler, feeHandler, maintenanceHandler, reportHandler, tenantPortalHandler, userHandler, aiHandler)
 	return routerRouter, func() {
 	}, nil

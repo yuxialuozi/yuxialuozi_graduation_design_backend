@@ -130,3 +130,13 @@ func (r *MaintenanceRepository) GetLastTicketNo() (string, error) {
 	}
 	return maintenance.TicketNo, nil
 }
+
+// GetDistinctAssignees returns all distinct assignee names from maintenance records.
+func (r *MaintenanceRepository) GetDistinctAssignees() ([]string, error) {
+	var assignees []string
+	err := r.db.Model(&model.Maintenance{}).
+		Where("assignee IS NOT NULL AND assignee != ''").
+		Distinct("assignee").
+		Pluck("assignee", &assignees).Error
+	return assignees, err
+}

@@ -236,14 +236,17 @@ func (h *FeeHandler) Delete(c *gin.Context) {
 func (h *FeeHandler) Pay(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		response.BadRequest(c, "无效的 ID")
+		response.BadRequest(c, "无效的费用ID")
 		return
 	}
 
 	var req dto.PayFeeRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "无效的请求参数")
-		return
+	// 只有当请求有body时才尝试解析JSON，避免空body导致解析失败
+	if c.Request.ContentLength > 0 {
+		if err := c.ShouldBindJSON(&req); err != nil {
+			response.BadRequest(c, "请求参数格式错误，请检查JSON格式")
+			return
+		}
 	}
 
 	var paidDate *time.Time

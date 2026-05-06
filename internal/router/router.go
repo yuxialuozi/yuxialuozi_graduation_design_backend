@@ -99,6 +99,10 @@ func (r *Router) setupRoutes() {
 			protected.POST("/auth/logout", r.authHandler.Logout)
 			protected.POST("/auth/change-password", r.authHandler.ChangePassword)
 
+			// Profile (protected, all authenticated users)
+			protected.GET("/profile", r.authHandler.GetProfile)
+			protected.PUT("/profile", r.authHandler.UpdateProfile)
+
 			// Tenants (管理端API，仅admin可访问)
 			tenants := protected.Group("/tenants")
 			tenants.Use(middleware.RequireAdmin())
@@ -119,6 +123,9 @@ func (r *Router) setupRoutes() {
 				contracts.POST("", r.contractHandler.Create)
 				contracts.PUT("/:id", r.contractHandler.Update)
 				contracts.DELETE("/:id", r.contractHandler.Delete)
+				contracts.POST("/:id/activate", r.contractHandler.Activate)
+				contracts.POST("/:id/terminate", r.contractHandler.Terminate)
+				contracts.GET("/expiring", r.contractHandler.GetExpiring)
 			}
 
 			// Rooms (管理端API，仅admin可访问)
@@ -131,6 +138,8 @@ func (r *Router) setupRoutes() {
 				rooms.PUT("/:id", r.roomHandler.Update)
 				rooms.DELETE("/:id", r.roomHandler.Delete)
 				rooms.POST("/:id/assign", r.roomHandler.AssignTenant)
+				rooms.POST("/:id/unassign", r.roomHandler.Unassign)
+				rooms.GET("/buildings", r.roomHandler.GetBuildings)
 			}
 
 			// Fees (管理端API，仅admin可访问)
@@ -156,6 +165,8 @@ func (r *Router) setupRoutes() {
 				maintenance.DELETE("/:id", r.maintenanceHandler.Delete)
 				maintenance.POST("/:id/assign", r.maintenanceHandler.Assign)
 				maintenance.POST("/:id/complete", r.maintenanceHandler.Complete)
+				maintenance.POST("/:id/cancel", r.maintenanceHandler.Cancel)
+				maintenance.GET("/staff", r.maintenanceHandler.GetStaff)
 			}
 
 			// Reports (管理端API，仅admin可访问)
@@ -194,7 +205,12 @@ func (r *Router) setupRoutes() {
 			users := protected.Group("/users")
 			users.Use(middleware.RequireAdmin())
 			{
+				users.GET("", r.userHandler.List)
+				users.GET("/:id", r.userHandler.GetByID)
 				users.POST("", r.userHandler.CreateUser)
+				users.PUT("/:id", r.userHandler.Update)
+				users.DELETE("/:id", r.userHandler.Delete)
+				users.POST("/:id/reset-password", r.userHandler.ResetPassword)
 			}
 		}
 	}

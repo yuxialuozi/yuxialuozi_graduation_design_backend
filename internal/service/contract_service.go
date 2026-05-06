@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -51,6 +52,34 @@ func (s *ContractService) Delete(id uint) error {
 
 func (s *ContractService) List(page, pageSize int, keyword, status string, startDateFrom, startDateTo *time.Time, tenantID uint) ([]model.Contract, int64, error) {
 	return s.contractRepo.List(page, pageSize, keyword, status, startDateFrom, startDateTo, tenantID)
+}
+
+func (s *ContractService) Activate(id uint) error {
+	contract, err := s.contractRepo.FindByID(id)
+	if err != nil {
+		return errors.New("合同不存在")
+	}
+	if contract.Status != "draft" {
+		return errors.New("只有草稿状态的合同可以激活")
+	}
+	contract.Status = "active"
+	return s.contractRepo.Update(contract)
+}
+
+func (s *ContractService) Terminate(id uint) error {
+	contract, err := s.contractRepo.FindByID(id)
+	if err != nil {
+		return errors.New("合同不存在")
+	}
+	if contract.Status == "terminated" {
+		return errors.New("合同已终止")
+	}
+	contract.Status = "terminated"
+	return s.contractRepo.Update(contract)
+}
+
+func (s *ContractService) GetExpiring(days int) ([]model.Contract, error) {
+	return s.contractRepo.GetExpiring(days)
 }
 
 func (s *ContractService) generateContractNo() string {

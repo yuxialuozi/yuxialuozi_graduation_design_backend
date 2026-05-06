@@ -57,7 +57,10 @@ func (s *AuthService) Login(req *LoginRequest) (*LoginResponse, error) {
 		Username:    user.Username,
 		Nickname:    user.Nickname,
 		Avatar:      user.Avatar,
+		Phone:       user.Phone,
+		Email:       user.Email,
 		Role:        user.Role,
+		Status:      user.Status,
 		Permissions: []string(user.Permissions),
 		TenantID:    user.TenantID,
 		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
@@ -80,12 +83,32 @@ func (s *AuthService) GetCurrentUser(userID uint) (*model.UserResponse, error) {
 		Username:    user.Username,
 		Nickname:    user.Nickname,
 		Avatar:      user.Avatar,
+		Phone:       user.Phone,
+		Email:       user.Email,
 		Role:        user.Role,
+		Status:      user.Status,
 		Permissions: []string(user.Permissions),
 		TenantID:    user.TenantID,
 		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
 	}, nil
+}
+
+func (s *AuthService) UpdateProfile(userID uint, nickname, phone, email string) error {
+	updates := map[string]interface{}{}
+	if nickname != "" {
+		updates["nickname"] = nickname
+	}
+	if phone != "" {
+		updates["phone"] = phone
+	}
+	if email != "" {
+		updates["email"] = email
+	}
+	if len(updates) == 0 {
+		return nil
+	}
+	return s.userRepo.UpdateFields(userID, updates)
 }
 
 func (s *AuthService) ChangePassword(userID uint, oldPassword, newPassword string) error {

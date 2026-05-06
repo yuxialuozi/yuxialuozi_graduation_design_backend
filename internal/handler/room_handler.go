@@ -244,3 +244,45 @@ func (h *RoomHandler) AssignTenant(c *gin.Context) {
 
 	response.Success(c, nil)
 }
+
+// Unassign godoc
+// @Summary 释放房间
+// @Description 释放房间，取消与租户的关联，状态变为空置
+// @Tags 房间管理
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "房间 ID"
+// @Success 200 {object} response.Response
+// @Router /rooms/{id}/unassign [post]
+func (h *RoomHandler) Unassign(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "无效的 ID")
+		return
+	}
+
+	if err := h.roomService.ReleaseTenant(uint(id)); err != nil {
+		response.InternalError(c, "释放房间失败")
+		return
+	}
+
+	response.Success(c, "房间释放成功")
+}
+
+// GetBuildings godoc
+// @Summary 获取楼栋列表
+// @Description 获取所有已存在的楼栋名称列表
+// @Tags 房间管理
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /rooms/buildings [get]
+func (h *RoomHandler) GetBuildings(c *gin.Context) {
+	buildings, err := h.roomService.GetBuildings()
+	if err != nil {
+		response.InternalError(c, "获取楼栋列表失败")
+		return
+	}
+
+	response.Success(c, buildings)
+}

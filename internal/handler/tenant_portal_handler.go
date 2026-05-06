@@ -173,14 +173,17 @@ func (h *TenantPortalHandler) PayFee(c *gin.Context) {
 
 	var idDto dto.IDRequest
 	if err := c.ShouldBindUri(&idDto); err != nil {
-		response.BadRequest(c, "请求参数错误")
+		response.BadRequest(c, "无效的账单ID")
 		return
 	}
 
 	var req dto.PayFeeRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, "请求参数错误")
-		return
+	// 只有当请求有body时才尝试解析JSON，避免空body导致解析失败
+	if c.Request.ContentLength > 0 {
+		if err := c.ShouldBindJSON(&req); err != nil {
+			response.BadRequest(c, "请求参数格式错误，请检查JSON格式")
+			return
+		}
 	}
 
 	// 设置默认缴费时间

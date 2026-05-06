@@ -82,6 +82,19 @@ func (s *MaintenanceService) Complete(id uint, completedAt *time.Time) error {
 	return s.maintenanceRepo.Update(maintenance)
 }
 
+func (s *MaintenanceService) Cancel(id uint) error {
+	maintenance, err := s.maintenanceRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+	maintenance.Status = "cancelled"
+	return s.maintenanceRepo.Update(maintenance)
+}
+
+func (s *MaintenanceService) GetStaff() ([]string, error) {
+	return s.maintenanceRepo.GetDistinctAssignees()
+}
+
 func (s *MaintenanceService) generateTicketNo() string {
 	// 使用更好的随机数生成器，避免重复
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))

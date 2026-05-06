@@ -97,6 +97,24 @@ func (r *ContractRepository) CountByStatus(status string) (int64, error) {
 	return count, nil
 }
 
+// GetExpiring returns active contracts expiring within the specified number of days.
+func (r *ContractRepository) GetExpiring(days int) ([]model.Contract, error) {
+	var contracts []model.Contract
+	now := time.Now()
+	deadline := now.AddDate(0, 0, days)
+	err := r.db.Preload("Tenant").
+		Where("status = ? AND end_date >= ? AND end_date <= ?", "active", now, deadline).
+		Order("end_date ASC").
+		Find(&contracts).Error
+	if err != nil {
+		return nil, err
+	}
+	for i := range contracts {
+		contracts[i].TenantName = contracts[i].Tenant.Name
+	}
+	return contracts, nil
+}
+
 // 基于合同的收入结构
 type ContractIncomeByDay struct {
 	Day    string  `json:"day"`

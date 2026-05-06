@@ -228,3 +228,77 @@ func (h *ContractHandler) Delete(c *gin.Context) {
 
 	response.Success(c, nil)
 }
+
+// Activate godoc
+// @Summary 激活合同
+// @Description 将草稿状态的合同激活
+// @Tags 合同管理
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "合同 ID"
+// @Success 200 {object} response.Response
+// @Router /contracts/{id}/activate [post]
+func (h *ContractHandler) Activate(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "无效的 ID")
+		return
+	}
+
+	if err := h.contractService.Activate(uint(id)); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	response.Success(c, "合同激活成功")
+}
+
+// Terminate godoc
+// @Summary 终止合同
+// @Description 终止指定合同
+// @Tags 合同管理
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "合同 ID"
+// @Success 200 {object} response.Response
+// @Router /contracts/{id}/terminate [post]
+func (h *ContractHandler) Terminate(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "无效的 ID")
+		return
+	}
+
+	if err := h.contractService.Terminate(uint(id)); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	response.Success(c, "合同终止成功")
+}
+
+// GetExpiring godoc
+// @Summary 获取即将到期的合同
+// @Description 获取30天内即将到期的活跃合同列表
+// @Tags 合同管理
+// @Produce json
+// @Security BearerAuth
+// @Param days query int false "天数" default(30)
+// @Success 200 {object} response.Response
+// @Router /contracts/expiring [get]
+func (h *ContractHandler) GetExpiring(c *gin.Context) {
+	days := 30
+	if daysStr := c.Query("days"); daysStr != "" {
+		if d, err := strconv.Atoi(daysStr); err == nil && d > 0 {
+			days = d
+		}
+	}
+
+	contracts, err := h.contractService.GetExpiring(days)
+	if err != nil {
+		response.InternalError(c, "获取即将到期合同失败")
+		return
+	}
+
+	response.Success(c, contracts)
+}

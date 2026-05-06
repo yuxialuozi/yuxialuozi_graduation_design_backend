@@ -188,3 +188,35 @@ type ReportQueryRequest struct {
 	GroupBy string `form:"groupBy"`
 	Limit   int    `form:"limit,default=10"`
 }
+
+// User (re-export CreateUserRequest so user_handler.go can use it)
+type CreateUserRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Nickname string `json:"nickname"`
+	Role     string `json:"role"`
+	TenantID uint   `json:"tenantId"`
+}
+
+type UpdateUserRequest struct {
+	Nickname  string `json:"nickname"`
+	Phone     string `json:"phone"`
+	Email     string `json:"email"`
+	Role      string `json:"role"`
+	Status    string `json:"status"`
+	TenantID  uint   `json:"tenantId"`
+}
+
+type UserListRequest struct {
+	Page     int    `form:"page,default=1"`
+	PageSize int    `form:"pageSize,default=10"`
+	Keyword  string `form:"keyword"`
+	Role     string `form:"role"`
+}
+
+// Profile
+type UpdateProfileRequest struct {
+	Nickname string `json:"nickname"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
+}

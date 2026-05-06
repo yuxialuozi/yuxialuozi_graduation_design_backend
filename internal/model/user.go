@@ -10,10 +10,13 @@ type User struct {
 	Password    string         `gorm:"size:255;not null" json:"-"`
 	Nickname    string         `gorm:"size:50" json:"nickname"`
 	Avatar      string         `gorm:"size:255" json:"avatar"`
+	Phone       string         `gorm:"size:20" json:"phone"`
+	Email       string         `gorm:"size:100" json:"email"`
 	Role        string         `gorm:"size:20;default:'user'" json:"role"`
+	Status      string         `gorm:"size:20;default:'active'" json:"status"`
 	Permissions pq.StringArray `gorm:"type:text[]" json:"permissions" swaggertype:"array,string"`
-	TenantID    uint           `gorm:"index" json:"tenantId"` // 关联的租户ID，0表示管理员或未关联
-	Tenant      *Tenant        `gorm:"foreignKey:TenantID" json:"-"` // 不在JSON中输出
+	TenantID    uint           `gorm:"index" json:"tenantId"`
+	Tenant      *Tenant        `gorm:"foreignKey:TenantID" json:"-"`
 	CreatedAt   CustomTime     `json:"createdAt"`
 	UpdatedAt   CustomTime     `json:"updatedAt"`
 }
@@ -25,9 +28,12 @@ type UserResponse struct {
 	Username    string   `json:"username" example:"admin"`
 	Nickname    string   `json:"nickname" example:"管理员"`
 	Avatar      string   `json:"avatar" example:"https://example.com/avatar.jpg"`
+	Phone       string   `json:"phone" example:"13800138000"`
+	Email       string   `json:"email" example:"admin@example.com"`
 	Role        string   `json:"role" example:"admin"`
+	Status      string   `json:"status" example:"active"`
 	Permissions []string `json:"permissions" swaggertype:"array,string" example:"[\"read\", \"write\"]"`
-	TenantID    uint     `json:"tenantId" example:"1"` // 关联的租户ID
+	TenantID    uint     `json:"tenantId" example:"1"`
 	CreatedAt   string   `json:"createdAt" example:"2024-01-01 00:00:00"`
 	UpdatedAt   string   `json:"updatedAt" example:"2024-01-01 00:00:00"`
 }

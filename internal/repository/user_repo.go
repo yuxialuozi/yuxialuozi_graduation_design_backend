@@ -67,3 +67,31 @@ func (r *UserRepository) CreateUser(username, password, nickname, role string, t
 	}
 	return r.db.Create(user).Error
 }
+
+// ListFiltered returns paginated users with optional keyword and role filters.
+func (r *UserRepository) ListFiltered(page, pageSize int, keyword, role string) ([]model.User, int64, error) {
+	var users []model.User
+	var total int64
+
+	query := r.db.Model(&model.User{})
+	if keyword != "" {
+		query = query.Where("username ILIKE ? OR nickname ILIKE ? OR phone ILIKE ?",
+			"%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
+	}
+	if role != "" {
+		query = query.Where("role = ?", role)
+	}
+
+	query.Count(&total)
+	offset := (page - 1) * pageSize
+	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&users).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
+}
+
+// UpdateFields updates only the non-zero fields of a user.
+func (r *UserRepository) UpdateFields(id uint, updates map[string]interface{}) error {
+	return r.db.Model(&model.User{}).Where("id = ?", id).Updates(updates).Error
+}

@@ -282,3 +282,45 @@ func (h *MaintenanceHandler) Complete(c *gin.Context) {
 
 	response.Success(c, nil)
 }
+
+// Cancel godoc
+// @Summary 取消工单
+// @Description 取消指定的维修工单
+// @Tags 维修管理
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "工单 ID"
+// @Success 200 {object} response.Response
+// @Router /maintenance/{id}/cancel [post]
+func (h *MaintenanceHandler) Cancel(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "无效的 ID")
+		return
+	}
+
+	if err := h.maintenanceService.Cancel(uint(id)); err != nil {
+		response.InternalError(c, "取消工单失败")
+		return
+	}
+
+	response.Success(c, "工单已取消")
+}
+
+// GetStaff godoc
+// @Summary 获取维修人员列表
+// @Description 获取所有已存在的维修人员名称列表
+// @Tags 维修管理
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Response
+// @Router /maintenance/staff [get]
+func (h *MaintenanceHandler) GetStaff(c *gin.Context) {
+	staff, err := h.maintenanceService.GetStaff()
+	if err != nil {
+		response.InternalError(c, "获取维修人员列表失败")
+		return
+	}
+
+	response.Success(c, staff)
+}
