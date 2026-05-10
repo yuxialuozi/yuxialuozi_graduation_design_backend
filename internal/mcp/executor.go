@@ -361,7 +361,8 @@ func (e *ToolExecutor) SearchKnowledge(args map[string]interface{}) (string, err
 
 // ExecuteTool executes a tool by name with arguments
 func (e *ToolExecutor) ExecuteTool(name string, args map[string]interface{}) (string, error) {
-	tools := GetAllTools(e)
+	// Search both admin and tenant tools
+	tools := append(GetTenantTools(e), GetAdminTools(e)...)
 	for _, tool := range tools {
 		if tool.Name == name {
 			return tool.Handler(args)

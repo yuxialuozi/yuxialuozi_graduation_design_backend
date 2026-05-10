@@ -52,8 +52,8 @@ func (t *Tool) ToFunctionDef() map[string]interface{} {
 	}
 }
 
-// GetAllTools returns all available MCP tools
-func GetAllTools(executor *ToolExecutor) []Tool {
+// GetTenantTools returns tenant-specific tools
+func GetTenantTools(executor *ToolExecutor) []Tool {
 	return []Tool{
 		{
 			Name:        "get_tenant_profile",
@@ -159,9 +159,111 @@ func GetAllTools(executor *ToolExecutor) []Tool {
 	}
 }
 
-// GetToolsJSON returns all tools as JSON for BigModel API
-func GetToolsJSON(executor *ToolExecutor) string {
-	tools := GetAllTools(executor)
+// GetAdminTools returns admin-specific tools
+func GetAdminTools(executor *ToolExecutor) []Tool {
+	return []Tool{
+		{
+			Name:        "get_admin_dashboard",
+			Description: "获取系统全局仪表盘数据，包括总租户数、总房间数、入住率、有效合同数、待缴费账单、未缴总金额、待处理维修数、月收入趋势、费用构成等",
+			Parameters: ToolParameters{
+				Type:       "object",
+				Properties: map[string]ToolProperty{},
+				Required:   []string{},
+			},
+			Handler: executor.GetAdminDashboard,
+		},
+		{
+			Name:        "get_admin_fees",
+			Description: "获取系统全局费用统计，包括总账单数、已缴/未缴数量、未缴总金额、近期费用明细列表，支持按状态筛选",
+			Parameters: ToolParameters{
+				Type: "object",
+				Properties: map[string]ToolProperty{
+					"status": {
+						Type:        "string",
+						Description: "账单状态筛选：paid=已缴, unpaid=未缴, overdue=逾期，不传则返回全部",
+						Enum:        []string{"paid", "unpaid", "overdue"},
+					},
+				},
+				Required: []string{},
+			},
+			Handler: executor.GetAdminFees,
+		},
+		{
+			Name:        "get_admin_tenants",
+			Description: "获取系统全局租户统计，包括总租户数、有效/非有效租户数、租户排名（按房间数）",
+			Parameters: ToolParameters{
+				Type:       "object",
+				Properties: map[string]ToolProperty{},
+				Required:   []string{},
+			},
+			Handler: executor.GetAdminTenants,
+		},
+		{
+			Name:        "get_admin_contracts",
+			Description: "获取系统全局合同统计，包括总合同数、各状态数量、近期合同明细，支持按状态筛选",
+			Parameters: ToolParameters{
+				Type: "object",
+				Properties: map[string]ToolProperty{
+					"status": {
+						Type:        "string",
+						Description: "合同状态筛选：draft=草稿, active=生效中, expired=已过期, terminated=已终止",
+						Enum:        []string{"draft", "active", "expired", "terminated"},
+					},
+				},
+				Required: []string{},
+			},
+			Handler: executor.GetAdminContracts,
+		},
+		{
+			Name:        "get_admin_maintenance",
+			Description: "获取系统全局维修工单统计，包括总工单数、各状态数量、近期工单明细，支持按状态筛选",
+			Parameters: ToolParameters{
+				Type: "object",
+				Properties: map[string]ToolProperty{
+					"status": {
+						Type:        "string",
+						Description: "工单状态筛选：pending=待处理, processing=处理中, completed=已完成, cancelled=已取消",
+						Enum:        []string{"pending", "processing", "completed", "cancelled"},
+					},
+				},
+				Required: []string{},
+			},
+			Handler: executor.GetAdminMaintenance,
+		},
+		{
+			Name:        "search_knowledge",
+			Description: "搜索租户管理系统的知识库，查找相关的业务知识和政策说明",
+			Parameters: ToolParameters{
+				Type: "object",
+				Properties: map[string]ToolProperty{
+					"query": {
+						Type:        "string",
+						Description: "搜索关键词，如：租金计算、水电费、维修流程、合同条款等",
+					},
+				},
+				Required: []string{"query"},
+			},
+			Handler: executor.SearchKnowledge,
+		},
+	}
+}
+
+// GetAllTools returns all available MCP tools (legacy, returns tenant tools)
+func GetAllTools(executor *ToolExecutor) []Tool {
+	return GetTenantTools(executor)
+}
+
+// GetToolsByRole returns tools based on user role
+func GetToolsByRole(executor *ToolExecutor, role string) []Tool {
+	if role == "admin" {
+		return GetAdminTools(executor)
+	}
+	return GetTenantTools(executor)
+}
+
+// GetToolsJSONByRole returns tools JSON based on user role
+func GetToolsJSONByRole(executor *ToolExecutor, role string) string {
+	tools := GetToolsByRole(executor, role)
 	result := make([]map[string]interface{}, len(tools))
 	for i, tool := range tools {
 		result[i] = tool.ToFunctionDef()
