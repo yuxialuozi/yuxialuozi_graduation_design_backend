@@ -80,7 +80,8 @@ func connectDB(cfg *dbConfig) (*gorm.DB, error) {
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
 	)
 	return gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger:                               logger.Default.LogMode(logger.Info),
+		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 }
 
@@ -109,8 +110,7 @@ func recreateTables(db *gorm.DB) error {
 func seedData(db *gorm.DB) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	// ===== 1. 创建管理员用户（先删除外键约束，插入后再重建） =====
-	db.Exec("ALTER TABLE users DROP CONSTRAINT IF EXISTS fk_users_tenant")
+	// ===== 1. 创建管理员用户 =====
 	adminPwd, _ := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
 	admin := model.User{
 		Username:    "admin",
@@ -126,8 +126,6 @@ func seedData(db *gorm.DB) {
 	if err := db.Create(&admin).Error; err != nil {
 		log.Fatal("创建管理员失败: ", err)
 	}
-	// 重新添加外键约束
-	db.Exec("ALTER TABLE users ADD CONSTRAINT fk_users_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id)")
 	log.Println("已创建管理员: admin/123456")
 
 	// ===== 2. 创建房间 =====
